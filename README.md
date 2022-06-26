@@ -1,2 +1,2 @@
-# thesis_template
-A simple Thesis template for the Bachelor Degree in Computer Science @Unipadova
+# Tesi di laurea triennale
+Tesi di laurea triennale presso l'Università degli Studi di Padova di Alberto Lazari, A.A. 2021-2022.
