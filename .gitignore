@@ -224,3 +224,5 @@
 # compile script build dir
 **/output/
 **/build/
+
+src/*.pdf
