@@ -8,19 +8,19 @@ BUILD="build"
 THESIS="Lazari_Alberto_tesi"
 
 loadParams() {
-  glossary=1
-  bibliography=1
-  clean=1
-  log=0
+  glossary=true
+  bibliography=true
+  clean=true
+  log=false
 
   while getopts :bcd:glh flag
   do
     case "${flag}" in
-      b) bibliography=0;;
-      c) clean=0;;
+      b) bibliography=false;;
+      c) clean=false;;
       d) BUILD=$OPTARG;;
-      g) glossary=0;;
-      l) log=1;;
+      g) glossary=false;;
+      l) log=true;;
       h) printHelp; exit 0;;
       *) printHelp; exit 1;;
     esac
@@ -44,21 +44,36 @@ compile() {
 }
 
 makeGlossary() {
-  makeindex -s $THESIS.ist -t $THESIS.glg -o $THESIS.gls $THESIS.glo
+  makeindex -s $THESIS.ist -t $THESIS.glg -o $THESIS.{gls,glo}
   makeglossaries -d $BUILD $THESIS
-  makeindex -s $THESIS.ist -t $THESIS.alg -o $THESIS.acr $THESIS.acn
+  makeindex -s $THESIS.ist -t $THESIS.alg -o $THESIS.{acr,acn}
 }
 
 makeBibliography() {
   biber --input_directory $BUILD --output_directory $BUILD $THESIS
 }
 
+compileWithBibGloss() {
+  if [ $glossary = true ]; then
+    makeGlossary
+  fi
+
+  if [ $bibliography = true ]; then
+    makeBibliography
+  fi
+
+  compile
+
+  if [ $glossary = true ]; then
+    compile
+  fi
+}
+
 clean() {
-  rm $BUILD/*.acn $BUILD/*.aux $BUILD/*.bbl $BUILD/*.bcf $BUILD/*.glo
-  rm $BUILD/*.ist $BUILD/*.lof $BUILD/*.lot $BUILD/*.run.xml $BUILD/*.toc
-  if [[ $log != 1 ]]
-  then
-    rm $BUILD/*.blg  $BUILD/*.log
+  rm $BUILD/*.{acn,aux,bbl,bcf,glo,ist,lof,lot,run.xml,toc} &> /dev/null
+
+  if [ $log = false ]; then
+    rm $BUILD/*.{blg,log} &> /dev/null
   fi
 }
 
@@ -68,35 +83,17 @@ main() {
   
   loadParams $*
 
-  if [[ ! -d $BUILD ]];
-  then
+  if [ ! -d $BUILD ]; then
     mkdir $BUILD;
   fi
 
   compile
 
-  if [[ $glossary == 1 ]]
-  then
-    makeGlossary
+  if [ $glossary = true ] || [ $bibliography = true ]; then
+    compileWithBibGloss
   fi
-
-  if [[ $bibliography == 1 ]]
-  then
-    makeBibliography
-  fi
-
-  if [[ $glossary == 1 ]] || [[ $bibliography == 1 ]]
-  then
-    compile
-  fi
-
-  if [[ $glossary == 1 ]]
-  then
-    compile
-  fi
-
-  if [[ $clean == 1 ]]
-  then
+ 
+  if [ $clean = true ]; then
     clean
   fi
 
