@@ -65,9 +65,6 @@
 \DeclareBibliographyCategory{opere}
 \DeclareBibliographyCategory{web}
 
-\addtocategory{opere}{womak:lean-thinking}
-\addtocategory{web}{site:agile-manifesto}
-
 \defbibheading{opere}{\section*{Riferimenti bibliografici}}
 \defbibheading{web}{\section*{Siti Web consultati}}
 
@@ -104,7 +101,7 @@
     %pdfpagelabels,
     %draft,	% = elimina tutti i link (utile per stampe in bianco e nero)
     colorlinks=true,
-    linktocpage=true,
+    %linktocpage=true,  % mette i link sui numeri delle pagine
     pdfstartpage=1,
     pdfstartview=,
     % decommenta la riga seguente per avere link in nero (per esempio per la stampa in bianco e nero)
@@ -125,22 +122,16 @@
     linkcolor=RoyalBlue,
     citecolor=webgreen,
     %pagecolor=RoyalBlue,
-    %urlcolor=Black, linkcolor=Black, citecolor=Black, %pagecolor=Black,
-    pdftitle={\myTitle},
-    pdfauthor={\textcopyright\ \myName, \myUni, \myFaculty},
-    pdfsubject={},
-    pdfkeywords={},
-    pdfcreator={pdfLaTeX},
-    pdfproducer={LaTeX}
+    urlcolor=Black, linkcolor=Black, citecolor=Black, %pagecolor=Black,
 }
 
 %**************************************************************
 % Impostazioni di itemize
 %**************************************************************
-\renewcommand{\labelitemi}{$\ast$}
+%\renewcommand{\labelitemi}{$\ast$}
 
 %\renewcommand{\labelitemi}{$\bullet$}
-%\renewcommand{\labelitemii}{$\cdot$}
+\renewcommand{\labelitemii}{$\cdot$}
 %\renewcommand{\labelitemiii}{$\diamond$}
 %\renewcommand{\labelitemiv}{$\ast$}
 

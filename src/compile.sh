@@ -101,8 +101,8 @@ main() {
 
   if [[ ! -d $BUILD_DIR ]]; then
     FULL_RUN=true
-    GLOSSARY=true
-    BIBLIOGRAPHY=true
+    # GLOSSARY=true
+    # BIBLIOGRAPHY=true
 
     mkdir $BUILD_DIR;
   fi
