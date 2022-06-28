@@ -13,8 +13,8 @@ loadParams() {
   CLEAN=true
   LOG=false
 
-  # check that last parameter is not an option
-  if [[ $# -gt 0 && ! ${!#} =~ -.* ]]; then
+  # Check that last parameter is not an option
+  if [[ $# -gt 0 && ${!#} =~ ^[^-].*$ ]]; then
     PDF_NAME=${!#}
   else
     PDF_NAME=$THESIS
@@ -35,8 +35,8 @@ loadParams() {
 }
 
 printHelp() {
-  echo "LaTeX FIUP thesis compile script"
-  echo "Usage:    compile.sh [-bcdghl] [pdf_name]"
+  echo "LaTeX FIUP thesis template compile script"
+  echo "Usage:    compile.sh [-bcghl] [-d build_directory] [pdf_name]"
   echo "Shell options:"
   echo "    -b    skip bibliography compile"
   echo "    -c    skip build directory clean"
@@ -51,9 +51,9 @@ compile() {
 }
 
 makeGlossary() {
-  makeindex -s $THESIS.ist -t $THESIS.glg -o $THESIS.{gls,glo}
+  makeindex -s $BUILD_DIR/$THESIS.ist -t $BUILD_DIR/$THESIS.glg -o $BUILD_DIR/$THESIS.{gls,glo}
+  makeindex -s $BUILD_DIR/$THESIS.ist -t $BUILD_DIR/$THESIS.alg -o $BUILD_DIR/$THESIS.{acr,acn}
   makeglossaries -d $BUILD_DIR $THESIS
-  makeindex -s $THESIS.ist -t $THESIS.alg -o $THESIS.{acr,acn}
 }
 
 makeBibliography() {
@@ -72,6 +72,10 @@ compileWithBibGloss() {
   compile
 
   if [ $GLOSSARY = true ]; then
+    makeGlossary
+    compile
+
+    makeGlossary
     compile
   fi
 }
