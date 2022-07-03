@@ -1,10 +1,6 @@
-%**************************************************************
 % file contenente le impostazioni della tesi
-%**************************************************************
 
-%**************************************************************
 % Frontespizio
-%**************************************************************
 
 % Autore
 \newcommand{\myName}{Alberto Lazari}
@@ -38,18 +34,14 @@
 \newcommand{\myTime}{Luglio 2022}
 
 
-%**************************************************************
 % Impostazioni di impaginazione
 % see: http://wwwcdf.pd.infn.it/AppuntiLinux/a2547.htm
-%**************************************************************
 
 \setlength{\parindent}{14pt}   % larghezza rientro della prima riga
 \setlength{\parskip}{0pt}   % distanza tra i paragrafi
 
 
-%**************************************************************
 % Impostazioni di biblatex
-%**************************************************************
 \addbibresource{../bibliografia.bib}
 \bibliography{bibliografia} % database di biblatex 
 
@@ -69,9 +61,7 @@
 \defbibheading{web}{\section*{Siti Web consultati}}
 
 
-%**************************************************************
 % Impostazioni di caption
-%**************************************************************
 \captionsetup{
     tableposition=top,
     figureposition=bottom,
@@ -80,22 +70,11 @@
     labelfont=bf
 }
 
-%**************************************************************
-% Impostazioni di glossaries
-%**************************************************************
-\makeglossaries
-\input{glossario} % database di termini
-
-
-%**************************************************************
 % Impostazioni di graphicx
-%**************************************************************
 \graphicspath{{immagini/}} % cartella dove sono riposte le immagini
 
 
-%**************************************************************
 % Impostazioni di hyperref
-%**************************************************************
 \hypersetup{
     %hyperfootnotes=false,
     %pdfpagelabels,
@@ -125,9 +104,7 @@
     urlcolor=Black, linkcolor=Black, citecolor=Black, %pagecolor=Black,
 }
 
-%**************************************************************
 % Impostazioni di itemize
-%**************************************************************
 %\renewcommand{\labelitemi}{$\ast$}
 
 %\renewcommand{\labelitemi}{$\bullet$}
@@ -136,9 +113,7 @@
 %\renewcommand{\labelitemiv}{$\ast$}
 
 
-%**************************************************************
 % Impostazioni di listings
-%**************************************************************
 \lstset{
     language=[LaTeX]Tex,%C++,
     keywordstyle=\color{RoyalBlue}, %\bfseries,
@@ -157,16 +132,12 @@
 } 
 
 
-%**************************************************************
 % Impostazioni di xcolor
-%**************************************************************
 \definecolor{webgreen}{rgb}{0,.5,0}
 \definecolor{webbrown}{rgb}{.6,0,0}
 
 
-%**************************************************************
 % Altro
-%**************************************************************
 
 \newcommand{\omissis}{[\dots\negthinspace]} % produce [...]
 
@@ -182,11 +153,9 @@
 
 \newcommand{\glsfirstoccur}{\ap{{[g]}}}
 
-\newcommand{\intro}[1]{\emph{\textsf{#1}}}
+\newcommand{\intro}[1]{\emph{#1}}
 
-%**************************************************************
 % Environment per ``rischi''
-%**************************************************************
 \newcounter{riskcounter}                % define a counter
 \setcounter{riskcounter}{0}             % set the counter to some initial value
 
@@ -207,9 +176,7 @@
 
 \newcommand{\risksolution}[1]{\textbf{\\Soluzione:} #1.}
 
-%**************************************************************
 % Environment per ``use case''
-%**************************************************************
 \newcounter{usecasecounter}             % define a counter
 \setcounter{usecasecounter}{0}          % set the counter to some initial value
 
@@ -237,9 +204,7 @@
 \newcommand{\usecasepost}[1]{\textbf{\\Postcondizioni:} #1. \vspace{4pt}}
 \newcommand{\usecasealt}[1]{\textbf{\\Scenario Alternativo:} #1. \vspace{4pt}}
 
-%**************************************************************
 % Environment per ``namespace description''
-%**************************************************************
 
 \newenvironment{namespacedesc}{
     \vspace{10pt}
