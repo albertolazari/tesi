@@ -1,5 +1,10 @@
-\section{Introduzione al progetto}
 \intro{Storia del progetto prima del mio arrivo, azienda che ha commissionato il progetto, descrizione dello scopo della piattaforma e del suo funzionamento, motivazioni alla base della scelta di riscrittura del backend.}
+\section{Introduzione al progetto}
+Infinite Area, una piattaforma dell'innovazione, ha ideato e sviluppato un'applicazione web per l'organizzazione e la gestione di eventi e conferenze dal vivo, online e ibride, denominata Evvvents.\ L'applicazione si propone come un \emph{software as a service}, configurabile nell'aspetto e nelle funzionalità, in base alle preferenze dell'utente. In questo modo ogni utente che possiede un piano di iscrizione all'applicazione, un \emph{tenant}, gestisce la sua versione del software, rendendo Evvvents nel suo complesso un \emph{software multi tenant}.
+
+Dopo aver realizzato una prima versione prototipale di Evvvents, Infinite Area si è rivolta a Moku, chiedendo di apportare modifiche e miglioramenti all'applicazione. A seguito di un'attività di analisi effettuata da Moku, è risultato che il frontend sarebbe stato mantenuto e fatto evolvere, mentre il backend presentava grossi limiti, funzionali e strutturali. Mantenerlo e modificarlo per raggiungere uno standard di qualità adeguato sarebbe costato più tempo e risorse di una riscrittura completa, quindi è stata presa la decisione di svilupparlo da zero con le tecnologie utilizzate da Moku per prassi aziendale, per quanto possibile, puntando a ricreare una API quanto più simile a quella esistente, per limitare le modifiche necessarie sul frontend.
+
+Lo scopo del progetto di stage è stata la realizzazione della nuova versione del backend, partendo da un'attività di analisi dettagliata della versione originale, passando per la progettazione della nuova versione.
 
 
 \section{Requisiti}
@@ -91,6 +96,6 @@ Rails fornisce tutti gli strumenti per sviluppare un'applicazione web basata sul
 \paragraph{Active Admin} Permette di creare velocemente e con semplicità interfacce per la gestione dei dati nel database. Non è stato usato nel progetto di stage, perché il frontend era già progettato per fornire le stesse funzionalità agli utenti super admin.
 
 \subsection{API REST}
-REST è uno stile architetturale per la progettazione di API. Si basa su chiamate, dette \emph{endpoint} (\emph{routes} in Rails) formate da un URL, che identifica univocamente una risorsa, e un metodo HTTP, normalmente uno tra GET, POST, PUT, PATCH o DELETE. Viene ampiamente utilizzato nello sviluppo di API ed è supportato nativamente da molti framework.
+REST è uno stile architetturale per la progettazione di API \emph{stateless}. Si basa su chiamate a degli \emph{endpoint} (\emph{routes} in Rails), coppie formate da un URL, che identifica univocamente una risorsa, e un metodo HTTP, normalmente uno tra GET, POST, PUT, PATCH o DELETE. Viene ampiamente utilizzato nello sviluppo di API ed è supportato nativamente da molti framework.
 
 Essendo uno stile architetturale, REST non è una vera e propria tecnologia, ma in questo caso si contrappone a GraphQL, un linguaggio di query per API, che viene normalmente utilizzato nei progetti di Moku. Per il progetto di stage si è optato per sviluppare una API REST per limitare le modifiche necessarie da fare sul frontend, essendo che questo era già pronto e si basava sulla API precedente, sviluppata secondo lo stile REST. Sarebbe stato troppo costoso modificarne il funzionamento perché potesse funzionare con GraphQL.
