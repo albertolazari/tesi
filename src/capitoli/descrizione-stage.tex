@@ -55,24 +55,23 @@ Il periodo di svolgimento dello stage era previsto tra il 26 aprile 2022 e il 1 
 \end{table}
 
 
-\intro{Descrizione della configurazione del framework Ruby on Rails utilizzata: librerie utilizzate, Postgres, AWS, API REST.}
 \section{Tecnologie utilizzate}
 Essendo il progetto un lavoro di riscrittura completa, è stato deciso di sfruttare quasi tutte le tecnologie comunemente utilizzate per convenzione aziendale nello sviluppo di backend:
 
 \subsection{Ruby}
-Ruby \footcite{site:ruby} è un linguaggio di \emph{scripting} interpretato, a oggetti e dinamicamente tipato, che punta alla produttività, mantenendo una sintassi semplice ed elegante e una bassa curva di apprendimento. La sintassi prevede un uso limitato della punteggiatura e di elementi considerati superflui, preferendo uno stile spesso naturale e intuitivo, che migliora la leggibilità del codice:
-\begin{lstlisting}
-  user.updated_at = 1.hour.ago
-\end{lstlisting}
+Ruby \footcite{site:ruby} è un linguaggio di \emph{scripting} interpretato, a oggetti e dinamicamente tipizzato, che punta alla produttività, mantenendo una sintassi semplice ed elegante e una bassa curva di apprendimento. La sintassi prevede un uso limitato della punteggiatura e di elementi considerati superflui, preferendo uno stile spesso naturale e intuitivo, che migliora la leggibilità del codice:
+\begin{minted}{ruby}
+	user.updated_at = 1.hour.ago
+\end{minted}
 
 \noindent In Ruby ogni \emph{statement} è un'espressione, che ritorna un risultato, infatti ogni blocco di codice ritorna il risultato dell'ultima istruzione. Nell'esempio seguente la funzione \verb|get_image_from| ritorna l'immagine dall'array \verb|attribute|, se presente; altrimenti ritorna \verb|nil|, perché l'espressione non ha ritornato un risultato:
-\begin{lstlisting}
-  def get_image_from attribute do
-    attribute[:image] if attribute.has_key? :image
-  end
+\begin{minted}{ruby}
+	def get_image_from attribute do
+		attribute[:image] if attribute.has_key? :image
+	end
 
-  user.image = get_image_from uploaded_files
-\end{lstlisting}
+	user.image = get_image_from uploaded_files
+\end{minted}
 
 \noindent Il linguaggio è multi-paradigma, ma fortemente orientato agli oggetti: perfino i tipi primiti e i metodi vengono trattati come oggetti. Aggiungendo la possibilità di estendere ogni classe con nuovi metodi, anche successivamente alla sua dichiarazione, si ottiene un linguaggio estremamente flessibile ed estendibile, che consente di adattare il comportamento del linguaggio stesso alle proprie necessità.
 
@@ -90,3 +89,8 @@ Rails fornisce tutti gli strumenti per sviluppare un'applicazione web basata sul
 \paragraph{Action View} Fornisce metodi e classi per la definizione della parte di view dell'applicazione. Nei progetti di Moku non viene generalmente utilizzata, perché si utilizza Rails per sviluppare API backend, che comunicano con view separate. Nel caso del progetto di stage il frontend è sviluppato con Angular.
 \paragraph{Active Storage} Permette di memorizzare file, come immagini o documenti, su servizi cloud, invece che sul server o nel database. Sono disponibili diversi servizi, Moku utilizza AWS S3.
 \paragraph{Active Admin} Permette di creare velocemente e con semplicità interfacce per la gestione dei dati nel database. Non è stato usato nel progetto di stage, perché il frontend era già progettato per fornire le stesse funzionalità agli utenti super admin.
+
+\subsection{API REST}
+REST è uno stile architetturale per la progettazione di API. Si basa su chiamate, dette \emph{endpoint} (\emph{routes} in Rails) formate da un URL, che identifica univocamente una risorsa, e un metodo HTTP, normalmente uno tra GET, POST, PUT, PATCH o DELETE. Viene ampiamente utilizzato nello sviluppo di API ed è supportato nativamente da molti framework.
+
+Essendo uno stile architetturale, REST non è una vera e propria tecnologia, ma in questo caso si contrappone a GraphQL, un linguaggio di query per API, che viene normalmente utilizzato nei progetti di Moku. Per il progetto di stage si è optato per sviluppare una API REST per limitare le modifiche necessarie da fare sul frontend, essendo che questo era già pronto e si basava sulla API precedente, sviluppata secondo lo stile REST. Sarebbe stato troppo costoso modificarne il funzionamento perché potesse funzionare con GraphQL.
