@@ -60,8 +60,33 @@ Il periodo di svolgimento dello stage era previsto tra il 26 aprile 2022 e il 1 
 Essendo il progetto un lavoro di riscrittura completa, è stato deciso di sfruttare quasi tutte le tecnologie comunemente utilizzate per convenzione aziendale nello sviluppo di backend:
 
 \subsection{Ruby}
-Ruby \footcite{site:ruby} è un linguaggio di \emph{scripting} interpretato, a oggetti e dinamicamente tipato, che punta alla produttività, mantenendo una sintassi semplice ed elegante e una bassa curva di apprendimento. La sintassi prevede un uso limitato della punteggiatura e di elementi considerati superflui, preferendo uno stile spesso naturale e intuitivo, che migliora la leggibilità del codice.
+Ruby \footcite{site:ruby} è un linguaggio di \emph{scripting} interpretato, a oggetti e dinamicamente tipato, che punta alla produttività, mantenendo una sintassi semplice ed elegante e una bassa curva di apprendimento. La sintassi prevede un uso limitato della punteggiatura e di elementi considerati superflui, preferendo uno stile spesso naturale e intuitivo, che migliora la leggibilità del codice:
 \begin{lstlisting}
-	user.updated_at = 1.hour.ago
+  user.updated_at = 1.hour.ago
 \end{lstlisting}
-Il linguaggio è multi-paradigma, ma fortemente orientato agli oggetti: perfino i tipi primiti e i metodi vengono trattati come oggetti. 
+
+\noindent In Ruby ogni \emph{statement} è un'espressione, che ritorna un risultato, infatti ogni blocco di codice ritorna il risultato dell'ultima istruzione. Nell'esempio seguente la funzione \verb|get_image_from| ritorna l'immagine dall'array \verb|attribute|, se presente; altrimenti ritorna \verb|nil|, perché l'espressione non ha ritornato un risultato:
+\begin{lstlisting}
+  def get_image_from attribute do
+    attribute[:image] if attribute.has_key? :image
+  end
+
+  user.image = get_image_from uploaded_files
+\end{lstlisting}
+
+\noindent Il linguaggio è multi-paradigma, ma fortemente orientato agli oggetti: perfino i tipi primiti e i metodi vengono trattati come oggetti. Aggiungendo la possibilità di estendere ogni classe con nuovi metodi, anche successivamente alla sua dichiarazione, si ottiene un linguaggio estremamente flessibile ed estendibile, che consente di adattare il comportamento del linguaggio stesso alle proprie necessità.
+
+Da queste premesse si intuisce come Ruby sia predisposto per essere facilmente estensibile, infatti è presente un RubyGems, il \emph{package manager} per gestire la distribuzione delle \emph{gemme}, pacchetti che possono includere varie funzionalità per estendere il linguaggio, tra cui librerie o eseguibili. La configurazione delle gemme necessarie per un progetto, con le loro dipendenze e versioni, viene eseguita da Bundler, che si occupa di mantenere tutte queste informazioni nei \emph{Gemfile}. Di seguito sono elencate le principali gemme utilizzate nel progetto di stage.
+\paragraph{Rails} Framework utilizzato, illustrato successivamente in dettaglio.
+\paragraph{Devise} Fornisce molti metodi e endpoint già configurati per l'autenticazione sicura degli utenti, insieme alla gemma DeviseTokenAuth, che fornisce l'autenticazione tramite token.
+\paragraph{Pundit} Permette di separare la gestione dei permessi degli utenti dai controller, riducendo anche il codice ripetuto per l'autorizzazione.
+
+\subsection{Rails}
+Alcune gemme di RubyGems sono molto complete, tanto da includere all'interno un intero framework. L'esempio principale è la gemma Rails, che fornisce il framework \emph{Ruby on Rails} \footcite{site:rails}, o \emph{Rails}. Si basa sul paradigma \emph{convention over configuration}, quindi cerca di ridurre al minimo le decisioni che lo sviluppatore deve prendere, al fine di ridurre il codice \emph{boilerplate} e favorire il rispetto del principio \emph{don't repeat yourself} (DRY).
+
+Rails fornisce tutti gli strumenti per sviluppare un'applicazione web basata sul pattern Model-View-Controller (MVC), in particolare le librerie:
+\paragraph{Active Record} Implementa l'omonimo pattern architetturale, in cui si utilizza un database relazionale per memorizzare le informazioni relative ai modelli. Fornisce un'interfaccia per astrarre svariati \emph{database management system} (DBMS), in particolare una contenuta nella gemma PG, che permette di utilizzare un database basato su PostgreSQL, comunemente utilizzato nei progetti di Moku.
+\paragraph{Action Controller} Fornisce metodi e classi per la definizione dei controller REST dell'applicazione.
+\paragraph{Action View} Fornisce metodi e classi per la definizione della parte di view dell'applicazione. Nei progetti di Moku non viene generalmente utilizzata, perché si utilizza Rails per sviluppare API backend, che comunicano con view separate. Nel caso del progetto di stage il frontend è sviluppato con Angular.
+\paragraph{Active Storage} Permette di memorizzare file, come immagini o documenti, su servizi cloud, invece che sul server o nel database. Sono disponibili diversi servizi, Moku utilizza AWS S3.
+\paragraph{Active Admin} Permette di creare velocemente e con semplicità interfacce per la gestione dei dati nel database. Non è stato usato nel progetto di stage, perché il frontend era già progettato per fornire le stesse funzionalità agli utenti super admin.
