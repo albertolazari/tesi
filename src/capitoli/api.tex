@@ -80,7 +80,7 @@ Di ogni risorsa vengono mostrate solo le informazioni essenziali, invece di tutt
 \subsection{Dettagli di una risorsa}
 Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli della risorsa specificata. I dettagli non comprendono la totalità degli attributi del modello, ma un suo sottinsieme selezionato, per nascondere all'utente eventuali dettagli implementativi non rilevanti o attributi di tracciamento, come il creatore o l'istante di creazione e ultima modifica del record. Di seguito vengono elencati, per ogni modello, gli attributi restituiti per ogni risorsa:
 
-\subsection{User}
+\subsubsection{User}
 \begin{itemize}
 	\item \verb|id|,
 	\item \verb|email|,
@@ -93,7 +93,7 @@ Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli dell
 	\item \verb|organizer_id|
 \end{itemize}
 
-\subsection{Plan}
+\subsubsection{Plan}
 \begin{itemize}
 	\item \verb|id|,
 	\item \verb|name|,
@@ -176,6 +176,8 @@ Risponde all'endpoint \verb|POST /api/resources|, creando un nuovo record del re
 
 \subsection{Modifica di una risorsa}
 
+\subsection{Eliminazione di una risorsa}
+Risponde all'endpoint \verb|DELETE /api/resources/:id|, eliminando la risorsa fisicamente dal database oppure logicamente, impostando lo stato del record ad \verb|archived|, nei modelli in cui è prevista questa modalità di cancellazione. Restituisce nella risposta i dettagli della risorsa appena eliminata, se l'operazione è avvenuta con successo.
 
 
 \section{Gestione dei permessi}
