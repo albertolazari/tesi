@@ -171,7 +171,7 @@ Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli dell
 	\item \verb|organizer_id|
 \end{itemize}
 
-\subsection{Creazione di una risorsa}
+\subsection{Creazione di una risorsa} \label{api:create-route}
 Risponde all'endpoint \verb|POST /api/resources|, creando un nuovo record del relativo modello, con gli attributi specificati nel corpo della richiesta. Restituisce nella risposta i dettagli della risorsa appena creata, se l'operazione è avvenuta con successo.
 
 \subsection{Modifica di una risorsa}
@@ -179,6 +179,28 @@ Risponde agli endpoint \verb|PUT /api/resources/:id| e \verb|PATCH /api/resource
 
 \subsection{Eliminazione di una risorsa}
 Risponde all'endpoint \verb|DELETE /api/resources/:id|, eliminando la risorsa fisicamente dal database oppure logicamente, impostando lo stato del record ad \verb|archived|, nei modelli in cui è prevista questa modalità di cancellazione. Restituisce nella risposta i dettagli della risorsa appena eliminata, se l'operazione è avvenuta con successo.
+
+\subsection{Lista dei ruoli degli utenti}
+Risponde all'endpoint \verb|GET /api/users/roles|, elencando tutti i possibili ruoli di un utente:
+\begin{itemize}
+	\item super admin;
+	\item admin;
+	\item manager;
+	\item staff;
+	\item speaker;
+	\item participant.
+\end{itemize}
+Questa è un'informazione utile al frontend, che utilizza già estensivamente, quindi andava fornita attraverso un endpoint dedicato, non potendo essere reperita in altri modi. Per la struttura attuale dell'applicazione la risposta è sempre la stessa, perché i ruoli sono \emph{hard coded} nel software.
+
+\subsection{Lista delle risorse interne a una specifica risorsa}
+Alcuni modelli sono logicamente contenuti all'interno di altri, si vuole quindi poter elencare tutte le risorse contenute in una seconda risorsa. Nei modelli che sono stati implementati durante il progetto di stage questo accade in due casi:
+\begin{enumerate}
+	\item gli organizzatori stanno all'interno di una specifica piattaforma;
+	\item ogni organizzatore crea e utilizza delle \emph{location}.
+\end{enumerate} In questi casi se si vogliono elencare le risorse \verb|rescources_b| contenute nella risorsa \verb|resource_a| con identificativo \verb|:id| si effettua una chiamata all'endpoint \verb|GET /api/| \verb|resources_a/:id/resources_b|, ad esempio per elencare tutti gli organizzatori della piattaforma con id 10 si chiama \verb|GET /api/platforms/10/organizers|. È comunque possibile ottenere la lista di tutte le risorse relative a un modello, anche quando questo stia logicamente all'interno di un'altra risorsa. Ad esempio è comunque possibile ottenere la lista di tutti gli organizzatori di tutte le piattaforme chiamando \verb|GET /api/organizers|.
+
+\subsection{Creazione di una risorsa all'interno di un'altra risorsa}
+Nei casi appena sopracitati è necessario specificare la risorsa in cui sarà contenuta quella che si intende creare, quindi ho ritenuto oppurtuno rendere necessaria la creazione di queste particolari risorse chiamando l'endpoint \verb|POST /api/resources_a/:id/resources_b|, invece che con l'endpoint descritto nella sezione \ref{api:create-route}, che non viene esposto per i modelli interessati.
 
 
 \section{Gestione dei permessi}
