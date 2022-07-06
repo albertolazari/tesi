@@ -172,9 +172,10 @@ Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli dell
 \end{itemize}
 
 \subsection{Creazione di una risorsa}
-Risponde all'endpoint \verb|POST /api/resources|, creando un nuovo record del relativo modello, con gli attributi specificati nel corpo della richiesta
+Risponde all'endpoint \verb|POST /api/resources|, creando un nuovo record del relativo modello, con gli attributi specificati nel corpo della richiesta. Restituisce nella risposta i dettagli della risorsa appena creata, se l'operazione è avvenuta con successo.
 
 \subsection{Modifica di una risorsa}
+Risponde agli endpoint \verb|PUT /api/resources/:id| e \verb|PATCH /api/resources/:id|, modificando gli attributi della risorsa, specificati nel corpo della richiesta, con i valori passati. Restituisce nella risposta i dettagli della risorsa appena modificata, se l'operazione è avvenuta con successo.
 
 \subsection{Eliminazione di una risorsa}
 Risponde all'endpoint \verb|DELETE /api/resources/:id|, eliminando la risorsa fisicamente dal database oppure logicamente, impostando lo stato del record ad \verb|archived|, nei modelli in cui è prevista questa modalità di cancellazione. Restituisce nella risposta i dettagli della risorsa appena eliminata, se l'operazione è avvenuta con successo.
