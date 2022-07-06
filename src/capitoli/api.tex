@@ -1,26 +1,184 @@
 \section{Introduzione}
-\intro{Spiegazione del lavoro svolto in questa fase.}
+L'API è la parte più importante del backend: è l'interfaccia che viene esposta per interagire con l'applicazione. Viene utilizzata dal frontend per ottenere i dati necessari a soddisfare le richieste degli utenti, che, essendo già sviluppato, si aspetta di poter eseguire certe richieste e di ricevere una risposta di un certo tipo. È previsto che il frontend debba adattarsi ai cambiamenti del nuovo backend, una volta pronto, ma questi dovrebbero essere ridotti al minimo, quindi nella progettazione dei controller ho cercato di trovare il giusto equilibrio con quanto era stato fatto in precedenza e lo stile che viene suggerito dal framework.
 
 \section{Notazione adottata}
-\intro{Spiegazione convenzioni adottate nella descrizione degli endpoint.}
+Prima di descrivere la struttura delle operazioni viene illustrata la notazione adottata per gli endpoint:
+\begin{itemize}
+	\item la prima parte indica il metodo HTTP utilizzato: uno tra GET, POST, PUT, PATCH e DELETE, negli endpoint realizzati;
+	\item la seconda parte indica l'URI della risorsa relativa all'endpoint, senza specificare l'URL dell'applicazione;
+	\item tutti gli URI degli endpoint implementati sono all'interno del percorso \verb|/api|;
+	\item alcuni endpoint si riferiscono a una specifica risorsa invece che a una lista o collezione. In tal caso l'identificativo della risorsa viene rappresentato con la notazione \verb|:id| o \verb|:resource_id|;
+	\item viene utilizzata la parola \texttt{resources} per rappresentare il nome di un modello generico.
+\end{itemize}
+Ad esempio:
+\begin{enumerate}
+	\item una chiamata con metodo HTTP PUT a \verb|https://app.evvvents.it/api/| \\ \verb|platforms/2| risponde all'endpoint \verb|PUT /api/platforms/:id|;
+	\item a un endpoint generico \verb|DELETE /api/resources/:id| può rispondere alle chiamate \verb|DELETE /api/locations/1| o \verb|DELETE /api/users/4|.
+\end{enumerate}
+Ad ogni risposta viene associato uno stato HTTP. In caso di successo viene sempre restituito il codice \verb|200|, mentre gli errori restituiscono codici diversi, in base al contesto. I codici di errore genrali, che possono essere restituiti da qualsiasi endpoint implementato sono:
+\begin{itemize}
+	\item \verb|404|, nel caso in cui l'endpoint o la risorsa richiesta non esista;
+	\item \verb|500|, nel caso di errori generici nel backend, che non sono stati gestiti esplicitamente.
+\end{itemize}
+Gli altri casi di errore vengono descritti nelle sezioni successive.
 
 \section{Descrizione delle funzionalità esposte}
-\intro{Descrizione degli endpoint esposti dalla API, in generale per ogni modello e nello specifico per le eccezioni.}
+Di seguito vengono descritte le operazioni che deve essere possibile eseguire su ogni modello dell'applicazione, chiamando i relativi endpoint.
 
 \subsection{Lista delle risorse}
-\intro{Route index, attributi mostrati per ogni modello implementato.}
+Risponde all'endpoint \verb|GET /api/resources|, restituendo la lista delle risorse associate al modello specificato, generalmente ordinate per nome, dove presente. La risposta prevede l'utilizzo della paginazione, con cui si può interagire attraverso i due parametri GET opzionali:
+\begin{enumerate}
+	\item \verb|page|, che indica il numero della pagina che si vuole visualizzare. Se non indicato, la risposta mostrerà la prima pagina;
+	\item \verb|per_page|, che indica il numero di risorse presenti per pagina. Se non indicato vengono mostrate 25 risorse per pagina, valore già utilizzato nel frontend.
+\end{enumerate}
+Di ogni risorsa vengono mostrate solo le informazioni essenziali, invece di tutte quelle fornite dal modello. Di seguito vengono elencati gli attributi restituiti per ogni risorsa, nella lista di ogni modello implementato:
+
+\subsubsection{User}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|email|,
+	\item \verb|first_name|,
+	\item \verb|last_name|,
+	\item \verb|role|,
+	\item \verb|organizer_id|
+\end{itemize}
+
+\subsubsection{Plan}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|description|,
+	\item \verb|price|
+\end{itemize}
+
+\subsubsection{Platform}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|website|,
+	\item \verb|host_url|,
+	\item \verb|main_organizer_id|
+\end{itemize}
+
+\subsubsection{Organizer}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|platform_id|,
+	\item \verb|address|,
+	\item \verb|city|,
+	\item \verb|country|
+\end{itemize}
+
+\subsubsection{Location}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|organizer_id|
+\end{itemize}
 
 \subsection{Dettagli di una risorsa}
-\intro{Route show, attributi mostrati per ogni modello implementato.}
+Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli della risorsa specificata. I dettagli non comprendono la totalità degli attributi del modello, ma un suo sottinsieme selezionato, per nascondere all'utente eventuali dettagli implementativi non rilevanti o attributi di tracciamento, come il creatore o l'istante di creazione e ultima modifica del record. Di seguito vengono elencati, per ogni modello, gli attributi restituiti per ogni risorsa:
+
+\subsection{User}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|email|,
+	\item \verb|image|,
+	\item \verb|first_name|,
+	\item \verb|last_name|,
+	\item \verb|role|,
+	\item \verb|phone|,
+	\item \verb|status|,
+	\item \verb|organizer_id|
+\end{itemize}
+
+\subsection{Plan}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|price|,
+	\item \verb|description|,
+	\item \verb|max_events|,
+	\item \verb|max_participants|,
+	\item \verb|max_integrations|,
+	\item \verb|max_storage|,
+	\item \verb|desk_number|
+\end{itemize}
+
+\subsubsection{Platform}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|logo|,
+	\item \verb|logo_dark|,
+	\item \verb|favicon|,
+	\item \verb|logo_small|,
+	\item \verb|website|,
+	\item \verb|host_url|,
+	\item \verb|privacy_url|,
+	\item \verb|powered_by|,
+	\item \verb|action_bar_color|,
+	\item \verb|side_bar_color|,
+	\item \verb|border_color|,
+	\item \verb|sign_in_color|,
+	\item \verb|event_color|,
+	\item \verb|status|,
+	\item \verb|plan_id|,
+	\item \verb|main_organizer_id|
+\end{itemize}
+
+\subsubsection{Organizer}
+\begin{itemize}
+	\item \verb|id|,
+    \item \verb|name|,
+    \item \verb|logo|,
+    \item \verb|platform_id|,
+    \item \verb|vat|,
+    \item \verb|sdi|,
+    \item \verb|address|,
+    \item \verb|city|,
+    \item \verb|country|,
+    \item \verb|zip_code|,
+    \item \verb|status|,
+    \item \verb|email|,
+    \item \verb|email_pec|,
+    \item \verb|phone|,
+    \item \verb|finished_webhook|,
+    \item \verb|add_participant_webhook|,
+    \item \verb|remove_participant_webhook|
+\end{itemize}
+
+\subsubsection{Location}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|status|,
+	\item \verb|description|,
+	\item \verb|image|,
+	\item \verb|address|,
+	\item \verb|civic|,
+	\item \verb|city|,
+	\item \verb|province|,
+	\item \verb|zip_code|,
+	\item \verb|google_place_identifier|,
+	\item \verb|latitude|,
+	\item \verb|longitude|,
+	\item \verb|how_to_get_by_car|,
+	\item \verb|how_to_get_by_plane|,
+	\item \verb|how_to_get_by_train|,
+	\item \verb|internal_notes|,
+	\item \verb|organizer_id|
+\end{itemize}
 
 \subsection{Creazione di una risorsa}
-\intro{Route create.}
+Risponde all'endpoint \verb|POST /api/resources|, creando un nuovo record del relativo modello, con gli attributi specificati nel corpo della richiesta
 
 \subsection{Modifica di una risorsa}
-\intro{Route update.}
 
-\subsection{Eliminazione di una risorsa}
-\intro{Route delete.}
+
 
 \section{Gestione dei permessi}
 \intro{Permessi per le categorie di utenti per ogni controller.}
+
+L'API è la parte più importante del backend: è l'interfaccia che viene esposta per interagire con l'applicazione. Viene utilizzata dal frontend per ottenere i dati necessari a soddisfare le richieste degli utenti, ma potrebbe essere usata da qualsiasi altro tipo di \emph{client}, con o senza buone intenzioni, quindi è fondamentale che 
