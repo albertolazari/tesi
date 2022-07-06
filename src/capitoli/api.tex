@@ -271,3 +271,101 @@ L'autorizzazione delle azioni eseguite da un utente su un altro utente sono part
 	\item \textbf{dettaglio}: come la lista nell'organizzatore;
 	\item \textbf{scrittura}: come la lista nell'organizzatore;
 \end{itemize}
+
+\subsection{Parametri permessi}
+L'autorizzazione deve anche occuparsi dei parametri che possono essere permessi nel corpo delle richieste di creazione e modifica delle risorse. Vengono elencati di seguito per ogni modello:
+
+\subsubsection{User}
+Per la creazione:
+\begin{itemize}
+	\item \verb|email|,
+    \item \verb|first_name|,
+    \item \verb|last_name|,
+    \item \verb|role|,
+    \item \verb|phone|,
+    \item \verb|password|,
+    \item \verb|organizer_id|,
+	\item \verb|attachments|:
+	\begin{itemize}
+		\item \verb|image|
+	\end{itemize}
+\end{itemize}
+Per la modifica sono permessi gli stessi parametri consentiti per la creazione, eccetto la password e, se un utente sta modificando se stesso, il ruolo.
+
+\subsubsection{Plan}
+\begin{itemize}
+	\item \verb|name|,
+    \item \verb|description|,
+    \item \verb|max_events|,
+    \item \verb|max_participants|,
+    \item \verb|max_integrations|,
+    \item \verb|max_storage|,
+    \item \verb|desk_number|,
+    \item \verb|price|
+\end{itemize}
+
+\subsubsection{Platform}
+\begin{itemize}
+	\item \verb|name|,
+	\item \verb|website|,
+	\item \verb|host_url|,
+	\item \verb|privacy_url|,
+	\item \verb|powered_by|,
+	\item \verb|action_bar_color|,
+	\item \verb|side_bar_color|,
+	\item \verb|border_color|,
+	\item \verb|sign_in_color|,
+	\item \verb|event_color|,
+	\item \verb|main_organizer|,
+	\item \verb|plan_id|,
+	\item \verb|attachments|:
+	\begin{itemize}
+		\item \verb|logo|,
+		\item \verb|logo_dark|,
+		\item \verb|favicon|,
+		\item \verb|logo_small|
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{Organizer}
+\begin{itemize}
+	\item \verb|name|,
+	\item \verb|vat|,
+	\item \verb|sdi|,
+	\item \verb|address|,
+	\item \verb|city|,
+	\item \verb|country|,
+	\item \verb|zip_code|,
+	\item \verb|email|,
+	\item \verb|email_pec|,
+	\item \verb|phone|,
+	\item \verb|finished_webhook|,
+	\item \verb|add_participant_webhook|,
+	\item \verb|remove_participant_webhook|,
+	\item \verb|attachments|:
+	\begin{itemize}
+		\item \verb|logo|
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{Location}
+\begin{itemize}
+	\item \verb|name|,
+	\item \verb|description|,
+	\item \verb|address|,
+	\item \verb|civic|,
+	\item \verb|city|,
+	\item \verb|province|,
+	\item \verb|zip_code|,
+	\item \verb|google_place_identifier|,
+	\item \verb|latitude|,
+	\item \verb|longitude|,
+	\item \verb|how_to_get_by_car|,
+	\item \verb|how_to_get_by_plane|,
+	\item \verb|how_to_get_by_train|,
+	\item \verb|internal_notes|,
+	\item \verb|attachments|:
+	\begin{itemize}
+		\item \verb|image|
+	\end{itemize}
+\end{itemize}
