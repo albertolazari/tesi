@@ -25,7 +25,7 @@ Gli altri casi di errore vengono descritti nelle sezioni successive.
 \section{Descrizione delle funzionalità esposte}
 Di seguito vengono descritte le operazioni che deve essere possibile eseguire su ogni modello dell'applicazione, chiamando i relativi endpoint.
 
-\subsection{Lista delle risorse}
+\subsection{Lista delle risorse} \label{api:lista}
 Risponde all'endpoint \verb|GET /api/resources|, restituendo la lista delle risorse associate al modello specificato, generalmente ordinate per nome, dove presente. La risposta prevede l'utilizzo della paginazione, con cui si può interagire attraverso i due parametri GET opzionali:
 \begin{enumerate}
 	\item \verb|page|, che indica il numero della pagina che si vuole visualizzare. Se non indicato, la risposta mostrerà la prima pagina;
@@ -77,7 +77,7 @@ Di ogni risorsa vengono mostrate solo le informazioni essenziali, invece di tutt
 	\item \verb|organizer_id|
 \end{itemize}
 
-\subsection{Dettagli di una risorsa}
+\subsection{Dettagli di una risorsa} \label{api:dettaglio}
 Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli della risorsa specificata. I dettagli non comprendono la totalità degli attributi del modello, ma un suo sottinsieme selezionato, per nascondere all'utente eventuali dettagli implementativi non rilevanti o attributi di tracciamento, come il creatore o l'istante di creazione e ultima modifica del record. Di seguito vengono elencati, per ogni modello, gli attributi restituiti per ogni risorsa:
 
 \subsubsection{User}
@@ -171,16 +171,16 @@ Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli dell
 	\item \verb|organizer_id|
 \end{itemize}
 
-\subsection{Creazione di una risorsa} \label{api:create-route}
+\subsection{Creazione di una risorsa} \label{api:creazione}
 Risponde all'endpoint \verb|POST /api/resources|, creando un nuovo record del relativo modello, con gli attributi specificati nel corpo della richiesta. Restituisce nella risposta i dettagli della risorsa appena creata, se l'operazione è avvenuta con successo.
 
-\subsection{Modifica di una risorsa}
+\subsection{Modifica di una risorsa} \label{api:modifica}
 Risponde agli endpoint \verb|PUT /api/resources/:id| e \verb|PATCH /api/resources/:id|, modificando gli attributi della risorsa, specificati nel corpo della richiesta, con i valori passati. Restituisce nella risposta i dettagli della risorsa appena modificata, se l'operazione è avvenuta con successo.
 
-\subsection{Eliminazione di una risorsa}
+\subsection{Eliminazione di una risorsa} \label{api:eliminazione}
 Risponde all'endpoint \verb|DELETE /api/resources/:id|, eliminando la risorsa fisicamente dal database oppure logicamente, impostando lo stato del record ad \verb|archived|, nei modelli in cui è prevista questa modalità di cancellazione. Restituisce nella risposta i dettagli della risorsa appena eliminata, se l'operazione è avvenuta con successo.
 
-\subsection{Lista dei ruoli degli utenti}
+\subsection{Lista dei ruoli degli utenti} \label{api:utenti-lista-ruoli}
 Risponde all'endpoint \verb|GET /api/users/roles|, elencando tutti i possibili ruoli di un utente:
 \begin{itemize}
 	\item super admin;
@@ -192,18 +192,82 @@ Risponde all'endpoint \verb|GET /api/users/roles|, elencando tutti i possibili r
 \end{itemize}
 Questa è un'informazione utile al frontend, che utilizza già estensivamente, quindi andava fornita attraverso un endpoint dedicato, non potendo essere reperita in altri modi. Per la struttura attuale dell'applicazione la risposta è sempre la stessa, perché i ruoli sono \emph{hard coded} nel software.
 
-\subsection{Lista delle risorse interne a una specifica risorsa}
+\subsection{Lista delle risorse interne a una specifica risorsa} \label{api:lista-risorsa}
 Alcuni modelli sono logicamente contenuti all'interno di altri, si vuole quindi poter elencare tutte le risorse contenute in una seconda risorsa. Nei modelli che sono stati implementati durante il progetto di stage questo accade in due casi:
 \begin{enumerate}
 	\item gli organizzatori stanno all'interno di una specifica piattaforma;
 	\item ogni organizzatore crea e utilizza delle \emph{location}.
 \end{enumerate} In questi casi se si vogliono elencare le risorse \verb|rescources_b| contenute nella risorsa \verb|resource_a| con identificativo \verb|:id| si effettua una chiamata all'endpoint \verb|GET /api/| \verb|resources_a/:id/resources_b|, ad esempio per elencare tutti gli organizzatori della piattaforma con id 10 si chiama \verb|GET /api/platforms/10/organizers|. È comunque possibile ottenere la lista di tutte le risorse relative a un modello, anche quando questo stia logicamente all'interno di un'altra risorsa. Ad esempio è comunque possibile ottenere la lista di tutti gli organizzatori di tutte le piattaforme chiamando \verb|GET /api/organizers|.
 
-\subsection{Creazione di una risorsa all'interno di un'altra risorsa}
-Nei casi appena sopracitati è necessario specificare la risorsa in cui sarà contenuta quella che si intende creare, quindi ho ritenuto oppurtuno rendere necessaria la creazione di queste particolari risorse chiamando l'endpoint \verb|POST /api/resources_a/:id/resources_b|, invece che con l'endpoint descritto nella sezione \ref{api:create-route}, che non viene esposto per i modelli interessati.
+\subsection{Creazione di una risorsa all'interno di un'altra risorsa} \label{api:creazione-risorsa}
+Nei casi appena sopracitati è necessario specificare la risorsa in cui sarà contenuta quella che si intende creare, quindi ho ritenuto oppurtuno rendere necessaria la creazione di queste particolari risorse chiamando l'endpoint \verb|POST /api/resources_a/:id/resources_b|, invece che con l'endpoint descritto nella sotto-sezione \ref{api:creazione}, che non viene esposto per i modelli interessati.
 
 
 \section{Gestione dei permessi}
 \intro{Permessi per le categorie di utenti per ogni controller.}
 
-L'API è la parte più importante del backend: è l'interfaccia che viene esposta per interagire con l'applicazione. Viene utilizzata dal frontend per ottenere i dati necessari a soddisfare le richieste degli utenti, ma potrebbe essere usata da qualsiasi altro tipo di \emph{client}, con o senza buone intenzioni, quindi è fondamentale che 
+L'API, oltre ad essere utilizzata dal frontend, potrebbe essere usata da qualsiasi altro tipo di \emph{client}, con o senza buone intenzioni, quindi è fondamentale che siano presenti dei controlli sulle autorizzazioni degli utenti che effettuano richieste, per ogni funzionalità esposta.
+
+\subsection{Autenticazione e autorizzazione}
+Prima di procedere bisogna fare un'importante premessa: autenticazione e autorizzazione, seppur simili, sono due concetti diversi e, come tali, devono essere separati anche strutturalmente.
+
+L'autenticazione avviene quando l'utente esegue l'azione tecnicamente chiamata \emph{sign-in} o \emph{log-in}. Serve a provare che l'utente è chi dichiara di essere. A livello di codifica questa viene gestita da Devise, una gemma adatta allo scopo, dunque non è stato necessario definirne la progettazione.
+
+L'autorizzazione definisce se uno specifico utente o tipologia di utenti abbia o meno il permesso di eseguire una certa azione. Questa sezione si occupa di descrivere le autorizzazioni richieste per ogni funzionalità implementata dall'API, riferita nel modo seguente:
+\begin{itemize}
+	\item \textbf{lista}: si riferisce a quanto descritto in \S \ref{api:lista};
+	\item \textbf{lista nella risorsa}: si riferisce a quanto descritto in \S \ref{api:lista-risorsa};
+	\item \textbf{dettaglio}: si riferisce a quanto descritto in \S \ref{api:dettaglio};
+	\item \textbf{creazione}: si riferisce a quanto descritto in \S \ref{api:creazione} e in \S \ref{api:creazione-risorsa};
+	\item \textbf{modifica}: si riferisce a quanto descritto in \S \ref{api:modifica};
+	\item \textbf{eliminazione}: si riferisce a quanto descritto in \S \ref{api:eliminazione}.
+\end{itemize}
+Nella maggior parte dei casi non sarà necessario entrare così nel dettaglio, perché spesso le azioni di lista e di dettaglio sono accomunate nella categoria delle azioni di lettura, mentre quelle di creazione, modifica ed eliminazione vengono categorizzate come azioni di scrittura, tutte con gli stessi permessi di base, a cui eventualmente si aggiungono ulteriori vincoli o permessi.
+
+\subsection{Permessi richiesti}
+I permessi richiesti dalle azioni sui modelli vengono definite in base al ruolo dell'utente autenticato nel sistema al momento della richiesta. La prima condizione per qualsiasi azione quindi, è che l'utente abbia eseguito con successo l'autenticazione (azione per cui ovviamente la condizione non vale). L'azione stessa di autenticazione richiede delle autorizzazioni: sono tutte gestite da Devise, tranne la condizione che prevede che un utente non possa eseguire il \emph{log-in} se ha il ruolo di partecipante, perché l'applicazione web è dedicata solamente alla gestione degli eventi, a cui i partecipanti non devono avere accesso: loro si interfacciano al sistema esclusivamente attraverso l'applicazione \emph{mobile}.
+
+\subsubsection{User}
+L'autorizzazione delle azioni eseguite da un utente su un altro utente sono particolarmente complicate, perché dipendono dalla combinazione dei ruoli dell'utente interessato e dell'utente che ha eseguito la richiesta.
+\begin{itemize}
+	\item \textbf{lettura}: tutti gli utenti possono eseguire questa azione, ognuno però vede solamente gli utenti diversi da se stesso, con ruolo uguale o inferiore all'utente che ha eseguito la richiesta. A questo si aggiunge che:
+	\begin{itemize}
+		\item l'admin vede solamente utenti della sua stessa piattaforma;
+		\item il manager e lo staff vedono solamente utenti della loro stessa organizzatore;
+		\item lo speaker vede solo partecipanti e non può essere visto da nessuno, perché dipende dal modello degli eventi, che non è stato implementato durante lo svolgimento del progetto di stage.
+	\end{itemize}
+	\item \textbf{dettaglio}: ai permessi di lettura si aggiunge il permesso di un utente di vedere i dettagli di se stesso;
+	\item \textbf{scrittura}: i permessi sono gli stessi della lettura, ma in questo caso il ruolo dell'utente che esegue la richiesta deve essere superiore in senso stretto;
+	\item \textbf{modifica}: ai permessi di scrittura si aggiunge il permesso, per un utente, di modificare se stesso;
+	\item \textbf{eliminazione}: ai permessi di scrittura si aggiunge il permesso, per un utente, di eliminare se stesso, nel solo caso in cui questo sia uno speaker;
+	\item \textbf{lista dei ruoli}: si riferisce a \S \ref{api:utenti-lista-ruoli}. Non è richiesta né l'autorizzazione, né l'autenticazione.
+\end{itemize}
+
+\subsubsection{Plan}
+\begin{itemize}
+	\item \textbf{lettura}: concessa a tutti gli utenti;
+	\item \textbf{scrittura}: permessa solamente ai super admin.
+\end{itemize}
+
+\subsubsection{Platform}
+\begin{itemize}
+	\item \textbf{lista}: permessa solamente ai super admin;
+	\item \textbf{dettaglio}: permesso ai super admin e agli admin della piattaforma su cui viene eseguita la richiesta;
+	\item \textbf{scrittura}: permessa solamente ai super admin.
+\end{itemize}
+
+\subsubsection{Organizer}
+\begin{itemize}
+	\item \textbf{lista}: permessa solamente ai super admin;
+	\item \textbf{lista nella piattaforma}: permessa ai super admin e agli admin della piattaforma;
+	\item \textbf{dettaglio}: come la lista nella piattaforma, ma è permesso anche al manager dell'organizzatore;
+	\item \textbf{scrittura}: come la lista nella piattaforma.
+\end{itemize}
+
+\subsubsection{Location}
+\begin{itemize}
+	\item \textbf{lista}: permessa solamente ai super admin;
+	\item \textbf{lista nell'organizzatore}: come il dettaglio per il modello \textbf{Organizer};
+	\item \textbf{dettaglio}: come la lista nell'organizzatore;
+	\item \textbf{scrittura}: come la lista nell'organizzatore;
+\end{itemize}
