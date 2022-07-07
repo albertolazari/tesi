@@ -132,8 +132,6 @@ end
 L'associazione \verb|has_many| è l'altra estremità di un'associazione \verb|belongs_to| dichiarata nel modello \verb|Location| e si basa sulla convenzione dei nomi di Rails per cui \verb|Location| deve avere una colonna nel database chiamata \verb|organizer_id|, che punta all'identificativo di un organizzatore. Serve per rendere accessibili le \emph{location} gestite dall'organizzatore, avendo il record dell'organizzatore stesso.
 
 \subsection{Validazioni} \label{code:validates}
-\intro{Validazioni sugli attributi del modello e le associazioni.}
-
 L'ultima fase di sviluppo della parte di modello sono le validazioni sugli attributi e le associazioni, che vengono codificate utilizzando principalmente i validatori forniti da Active Record, da altre gemme o creati manualmente. Le validazioni inseriscono dei messaggi di errore in un array associato al modello che si sta validando; prima di memorizzare nel database i dati del record che si vuole salvare, ad esempio chiamando i metodi \verb|save| o \verb|create|, viene chiamato il metodo \verb|valid?|, che controlla che l'array di errori sia vuoto, altrimenti è possibile accedervi e mostrare gli errori, anche come risposta della API. Le validazioni fornite da Active Record permettono di verificare vari aspetti degli attributi, come la presenza di un valore (\verb|NOT NULL|), il formato di una stinga o i controlli sui valori numerici e molti altri.
 
 Aggiungendo le validazioni sugli attributi, il file di esempio degli organizzatori diventa:
@@ -191,11 +189,20 @@ end
 \end{minted}
 
 \section{Controller}
-\subsection{APIController}
-\intro{Descrizione dei metodi di utilità ereditati dai controller dell'API.}
-
 \subsection{Implementazione delle action}
 \intro{Descrizione ed esempio di action tipiche dei controller.}
+
+\subsection{APIController}
+\verb|APIController| è la classe base da cui eredita ogni controller della API implementato. Include del codice per gestire automaticamente le eccezioni che possono essere sollevate dal backend e il relativo \emph{rendering} dell'errore. A quelli già presenti ho deciso di aggiungere la gestione delle eccezioni:
+\begin{itemize}
+	\item \verb|Pundit::NotAuthorizedError|: sollevata in caso di autorizzazione fallita. Restituisce il codice HTTP \verb|403|;
+	\item \verb|ActionController::UnpermittedParameters|: sollevata nel caso in cui sia presente un parametro non consentito nel corpo di una richiesta. Restituisce il codice HTTP \verb|400|.
+\end{itemize}
+Inoltre, ho deciso di rifattorizzare due operazioni che si ripetevano in quasi tutti i controller:
+
+\paragraph{\emph{Attach} dei file} I metodi \verb|create| e \verb|update| accettano un hash (simile a un array associativo di altri linguaggi), quindi è sufficiente passare ai metodi i parametri presenti nel corpo della richiesta, per assegnare il valore dei normali attributi di un record. Gli \emph{attachment} non vengono considerati normali attributi, quindi devono essere associati uno alla volta al record. Questo porta a una grande quantità di codice \emph{boilerplate}, quindi ho creato il metodo \mintinline{ruby}{attach_files_to record, from_attributes_in: :attachments}, che associa ogni file contenuto nel parametro della richiesta, specificato con \verb|from_| \verb|attributes_in|, al record \verb|record|.
+
+\paragraph{\emph{Rendering} della paginazione} Nelle risposte paginate è necessario ritornare, oltre alla lista dei record, anche le informazioni relative al numero totale di pagine e di record disponibili. Tutto questo viene gestito dal metodo \mintinline{ruby}{render_pagination collection_hash,} \mintinline{ruby}{each_serializer:}, a cui bisogna passare un hash contenete la lista dei record e un serializzatore, che agisce su ogni record.
 
 \section{Gestione dei permessi}
 \intro{Funzionamento e uso della gemma ``Pundit'' per la gestione dei permessi relativi agli endpoint dell'API, scope e metodi relativi alle action, esempio di gestione della gerarchia che andrà rivisto}
