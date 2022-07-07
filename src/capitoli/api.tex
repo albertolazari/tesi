@@ -222,7 +222,7 @@ L'autorizzazione definisce se uno specifico utente o tipologia di utenti abbia o
 \end{itemize}
 Nella maggior parte dei casi non sarà necessario entrare così nel dettaglio, perché spesso le azioni di lista e di dettaglio sono accomunate nella categoria delle azioni di lettura, mentre quelle di creazione, modifica ed eliminazione vengono categorizzate come azioni di scrittura, tutte con gli stessi permessi di base, a cui eventualmente si aggiungono ulteriori vincoli o permessi.
 
-\subsection{Permessi richiesti}
+\subsection{Permessi richiesti} \label{api:permessi-richiesti}
 I permessi richiesti dalle azioni sui modelli vengono definite in base al ruolo dell'utente autenticato nel sistema al momento della richiesta. La prima condizione per qualsiasi azione quindi, è che l'utente abbia eseguito con successo l'autenticazione (azione per cui ovviamente la condizione non vale). L'azione stessa di autenticazione richiede delle autorizzazioni: sono tutte gestite da Devise, tranne la condizione che prevede che un utente non possa eseguire il \emph{log-in} se ha il ruolo di partecipante, perché l'applicazione web è dedicata solamente alla gestione degli eventi, a cui i partecipanti non devono avere accesso: loro si interfacciano al sistema esclusivamente attraverso l'applicazione \emph{mobile}.
 
 \subsubsection{User}
@@ -270,7 +270,7 @@ L'autorizzazione delle azioni eseguite da un utente su un altro utente sono part
 	\item \textbf{scrittura}: come la lista nell'organizzatore;
 \end{itemize}
 
-\subsection{Parametri permessi}
+\subsection{Parametri permessi} \label{api:parametri-permessi}
 L'autorizzazione deve anche occuparsi dei parametri che possono essere permessi nel corpo delle richieste di creazione e modifica delle risorse. Vengono elencati di seguito per ogni modello:
 
 \subsubsection{User}
