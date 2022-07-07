@@ -35,7 +35,74 @@ Basandosi su quanto definito nella fase di progettazione dei modelli, descritta 
 \end{itemize}
 Di conseguenza, la sintassi generale è la seguente:
 \begin{minted}{shell}
-	rails g model ModelName attr_1:type:[uniq] attr_2:type:[uniq] ...
+rails g model ModelName attr_1:type:[uniq] attr_2:type:[uniq] ...
+\end{minted}
+Portando un esempio reale, per la generazione del modello degli organizzatori è stato usato il comando seguente:
+\begin{minted}{shell}
+rails g model Organizer name:string vat:string:uniq sdi:string:uniq address:string city:string country:string zip_code:string status:integer email:string email_pec:string phone:string finished_webhook:string add_participant_webhook:string remove_participant_webhook:string platform:references creator_id:bigint
+\end{minted}
+che ha prodotto la seguente migration:
+\begin{minted}{ruby}
+# db/migrate/{timestamp}_create_organizers.rb
+
+class CreateOrganizers < ActiveRecord::Migration[7.0]
+	def change
+	create_table :organizers do |t|
+		t.string :name
+		t.string :vat
+		t.string :sdi
+		t.string :address
+		t.string :city
+		t.string :country
+		t.string :zip_code
+		t.integer :status
+		t.string :email
+		t.string :email_pec
+		t.string :phone
+		t.string :finished_webhook
+		t.string :add_participant_webhook
+		t.string :remove_participant_webhook
+		t.references :platform, foreign_key: true
+		t.bigint :creator_id
+
+		t.timestamps
+	end
+	add_index :organizers, :vat, unique: true
+	add_index :organizers, :sdi, unique: true
+	end
+end
+\end{minted}
+Successivamente questa è stata modificata, aggiungendo i vincoli \verb|NOT NULL|, la \emph{foreign key} verso l'utente creatore e il valore di default per il ruolo, prima di eseguire effettivamente la migrazione. La migrazione definitiva è stata la seguente:
+\begin{minted}{ruby}
+# db/migrate/{timestamp}_create_organizers.rb
+
+class CreateOrganizers < ActiveRecord::Migration[7.0]
+  def change
+    create_table :organizers do |t|
+      t.string :name, null: false
+      t.string :vat, null: false
+      t.string :sdi, null: false
+      t.string :address, null: false
+      t.string :city, null: false
+      t.string :country, null: false
+      t.string :zip_code, null: false
+      t.integer :status, null: false, default: Organizer.statuses[:active]
+      t.string :email
+      t.string :email_pec
+      t.string :phone
+      t.string :finished_webhook
+      t.string :add_participant_webhook
+      t.string :remove_participant_webhook
+      t.references :platform, null: false, foreign_key: true
+      t.bigint :creator_id, null: false
+
+      t.timestamps
+    end
+    add_foreign_key :organizers, :users, column: :creator_id
+    add_index :organizers, :vat, unique: true
+    add_index :organizers, :sdi, unique: true
+  end
+end
 \end{minted}
 
 \subsection{Associazioni a modelli e file}
