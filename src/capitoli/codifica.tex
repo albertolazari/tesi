@@ -219,8 +219,22 @@ Inoltre, ho deciso di rifattorizzare due operazioni che si ripetevano in quasi t
 
 \paragraph{\emph{Rendering} della paginazione} Nelle risposte paginate è necessario ritornare, oltre alla lista dei record, anche le informazioni relative al numero totale di pagine e di record disponibili. Tutto questo viene gestito dal metodo \mintinline{ruby}{render_pagination collection_hash,} \mintinline{ruby}{each_serializer:}, a cui bisogna passare un hash contenete la lista dei record e un serializzatore, che agisce su ogni record.
 
+
 \section{Gestione dei permessi}
-\intro{Funzionamento e uso della gemma ``Pundit'' per la gestione dei permessi relativi agli endpoint dell'API, scope e metodi relativi alle action, esempio di gestione della gerarchia che andrà rivisto}
+\subsection{Policy}
+Per l'implementazione della gestione dei permessi, è stata utilizzata la gemma Pundit. Utilizza delle policy, dei \emph{plain old ruby object} (PORO), chiamati \verb|ModelPolicy|, per definire le condizioni per cui l'utente è autorizzato a eseguire una specifica azione sul record del modello \verb|Model| interessato. I PORO sono classi che non hanno alcuna dipendenza dal framework o da librerie esterne.
+
+\subsection{Action}
+Per autorizzare una specifica action viene utilizzato un metodo con lo stesso nome, seguito dal punto di domanda, che nelle convenzioni di Ruby indica i metodi che ritornano un valore booleano. Questo metodo viene chiamato nel momento in cui, nella action di un controller, viene chiamato il metodo \verb|authorize record|, dove \verb|record| è il record interessato dalla action.
+
+Ad esempio, se il metodo \verb|update?| della policy \verb|PlatformPolicy| ritorna \verb|true|, allora l'utente che intende modificare il record interessato dalla action è autorizzato a farlo. L'implementazione dei metodi delle policy rispetta quanto deciso nella fase di progettazione, descritta in \S \ref{api:permessi-richiesti}.
+
+\subsection{Scope}
+Le action \verb|index| richiedono che la lista dei record da ritornare venga filtrata, restituendo solamente i record che l'utente ha il permesso di visualizzare. Questo è stato implementato nel metodo \verb|resolve| della classe \verb|Scope|, definita all'interno di ogni policy. Chiamando il metodo \verb|policy_scope| nella action di un controller, passandogli la lista di record da filtrare, si ottiene la lista filtrata.
+
+\subsection{Parametri permessi}
+Per implementare le condizioni definite sui parametri permessi in \S \ref{api:parametri-permessi}, si definisce il metodo \verb|permitted_attributes| all'interno della policy, che deve restituire sempre un array di simboli, rappresentanti i parametri permessi. Questo metodo, chiamato nella action di un controller, restituisce i parametri presenti nel corpo della richiesta, se sono tutti permessi, altrimenti solleva un'eccezione.
+
 
 \section{Test di unità} \label{code:spec}
-\intro{Descrizione della gemma ``RSpec'', che fornisce strumenti per lo sviluppo guidato dal comportamento (behaviour-driven development), esempi di modelli testati.}
+Durante la codifica dei modelli sono stati definiti alcuni test di unità, prevalentemente sulle validazioni dei dati. Non sono stati testati tutti i modelli e, in particolare nessun controller, perché non era un'attività richiesta esplicitamente dal committente, quindi mi è stato chiesto dal \emph{project manager} di investirci una quantità limitata di tempo. I test definiti sono stati implementati utilizzando la gemma RSpec, che fornisce strumenti per lo sviluppo \emph{behaviour-driven development} (BDD), come da prassi aziendale di Moku.
