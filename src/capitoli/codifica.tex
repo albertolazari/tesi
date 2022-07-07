@@ -237,4 +237,19 @@ Per implementare le condizioni definite sui parametri permessi in \S \ref{api:pa
 
 
 \section{Test di unità} \label{code:spec}
-Durante la codifica dei modelli sono stati definiti alcuni test di unità, prevalentemente sulle validazioni dei dati. Non sono stati testati tutti i modelli e, in particolare nessun controller, perché non era un'attività richiesta esplicitamente dal committente, quindi mi è stato chiesto dal \emph{project manager} di investirci una quantità limitata di tempo. I test definiti sono stati implementati utilizzando la gemma RSpec, che fornisce strumenti per lo sviluppo \emph{behaviour-driven development} (BDD), come da prassi aziendale di Moku.
+Durante la codifica dei modelli sono stati definiti alcuni test di unità, prevalentemente sulle validazioni dei dati. Non sono stati testati tutti i modelli e, in particolare nessun controller, perché non era un'attività richiesta esplicitamente dal committente, quindi mi è stato chiesto dal \emph{project manager} di investirci una quantità limitata di tempo. I test definiti sono stati implementati utilizzando la gemma RSpec, che fornisce strumenti per il \emph{behaviour-driven development} (BDD), come da prassi aziendale di Moku. La pratica del BDD riprende molti concetti del \emph{test-driven development}, prestando particolare attenzione alla leggibilità dei test e alla loro intuitività. RSpec, in particolare, utilizza diverse \emph{keyword} che puntano a rendere il codice quanto più possibile simile al linguaggio naturale, gli stessi nomi dei test sono spesso delle vere e proprie frasi.
+Un esempio di un test implementato è:
+\begin{minted}{ruby}
+it 'is not valid without a role' do
+  subject.role = nil
+  expect(subject).not_to be_valid
+end
+\end{minted}
+
+\noindent Sono stati implementati test solamente per i seguenti modelli, per un totale di 36 test:
+\begin{itemize}
+	\item User;
+	\item Platform;
+	\item Organizer.
+\end{itemize}
+In particolare, i test scritti per il modello degli utenti sono i più esaustivi, perché sono quelli su cui è stato dedicato più tempo e comprendono test sulle validazioni, su alcuni aspetti dell'autenticazione e sull'associazione con l'utente \verb|creator|.
