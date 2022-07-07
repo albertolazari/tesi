@@ -1,6 +1,42 @@
 \section{Modelli}
+La codifica dei modelli passa per tre fasi successive:
+\begin{enumerate}
+	\item creazione della entità del modello nel database e della classe, utilizzando le migrazioni;
+	\item l'associazione del modello con altri modelli o elementi di \emph{storage};
+	\item le validazioni sugli attributi e sulle associazioni dichiarate.
+\end{enumerate}
+
 \subsection{Migrazioni del database}
 \intro{Comando} \texttt{rails generate} \intro{e migrazione prodotta.}
+
+Basandosi su quanto definito nella fase di progettazione dei modelli, descritta nel capitolo \ref{cap:modelli}, questi sono stati generati utilizzando da linea di comando il generatore automatico \verb|rails generate model| o, in versione ridotta, \verb|rails g model|. Il comando accetta come argomenti:
+\begin{itemize}
+	\item il nome del modello, al singolare e in \emph{CamelCase};
+	\item gli attributi che deve avere il modello;
+	\item per ogni attributo: il suo tipo, che rispecchia, ad alto livello, i tipi comunemente disponibili per le colonne nei DBMS SQL. Normalmente è uno dei seguenti tipi nativi delle migrazioni di Rails \footcite{site:migration-types}, agnostici rispetto all'implementazione del database:
+	\begin{itemize}
+		\item \verb|primary_key|,
+		\item \verb|string|,
+		\item \verb|text|,
+		\item \verb|integer|,
+		\item \verb|bigint|,
+		\item \verb|float|,
+		\item \verb|decimal|,
+		\item \verb|datetime|,
+		\item \verb|timestamp|,
+		\item \verb|time|,
+		\item \verb|date|,
+		\item \verb|binary|,
+		\item \verb|blob|,
+		\item \verb|boolean|,
+		\item \verb|references|
+	\end{itemize}
+	\item per ogni attributo: l'identificatore \verb|uniq|, che imposta un indice su quella colonna del database, che ne specifica l'unicità nell'entità.
+\end{itemize}
+Di conseguenza, la sintassi generale è la seguente:
+\begin{minted}{shell}
+	rails g model ModelName attr_1:type:[uniq] attr_2:type:[uniq] ...
+\end{minted}
 
 \subsection{Associazioni a modelli e file}
 \intro{Associazioni di Active Record e Active Storage.}
