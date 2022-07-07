@@ -29,6 +29,8 @@
 
 % Importazione package
 
+\PassOptionsToPackage{table}{xcolor}
+
 % colori PDF/A
 \PassOptionsToPackage{dvipsnames}{xcolor}
 
@@ -106,6 +108,16 @@
 %   2. eseguire: biber tesi
 %   3. compilare ancora tesi.tex
 \usepackage[backend=biber,style=verbose-ibid,hyperref,backref]{biblatex}
+
+\usepackage{makecell}
+
+\usepackage[outputdir=build]{minted}
+\usemintedstyle{emacs}
+\setminted{
+  bgcolor=lightgray,
+  fontsize=\small,
+  tabsize=2
+}
 
 % file con le impostazioni personali
 \input{tesi-config}
