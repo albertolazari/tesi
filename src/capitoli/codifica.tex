@@ -189,8 +189,23 @@ end
 \end{minted}
 
 \section{Controller}
+I controller sono le classi che si occupano di rispondere alle chiamate effettuate agli endpoint esposti dalla API. I metodi che gestiscono queste richieste sono chiamati ``action'' in Rails. Di seguito viene descritta l'implementazione delle action realizzate nei controller.
+
 \subsection{Implementazione delle action}
-\intro{Descrizione ed esempio di action tipiche dei controller.}
+\subsubsection{Index}
+Implementa gli endpoint descritti in \S \ref{api:lista} e \S \ref{api:lista-risorsa}. Verifica che l'utente sia autorizzato ad eseguire questa azione ed effettua il rendering paginato della lista dei record richiesti, dopo che questa è stata filtrata in base ai permessi dell'utente che ha effettuato la richiesta. Serializza i record mostrati, utilizzando un serializzatore conforme a quanto deciso durante la fase di progettazione e descritto in \S \ref{api:lista}.
+
+\subsubsection{Show}
+Implementa l'endpoint descritto in \S \ref{api:dettaglio}. Cerca e carica il record con l'identificativo richiesto dal database. Se questo è presente, verifica che l'utente sia autorizzato a visualizzarlo e lo restituisce, serializzato in modo conforme a quanto dichiarato nella descrizione dell'endpoint.
+
+\subsubsection{Create}
+Implementa gli endpoint descritti in \S \ref{api:creazione} e \S \ref{api:creazione-risorsa}. Controlla che tutti i parametri passati nel corpo della richiesta siano permessi e procede con la creazione del nuovo record. Prima di salvarlo nel database si assicura che l'utente sia autorizzato a creare quel record. Se la creazione avviene all'interno di un altro record, questo viene associato con quello appena creato. Infine associa i file al record, se richiesto e previsto, e lo restituisce serializzato come descritto in \S \ref{api:dettaglio}.
+
+\subsubsection{Update}
+Implementa l'endpoint descritto in \S \ref{api:modifica}. Cerca e carica il record con l'identificativo richiesto dal database. Se questo è presente, verifica che l'utente sia autorizzato a modificarlo. Controlla che tutti i parametri passati nel corpo della richiesta siano permessi e procede con la modifica degli attributi del record, corrispondenti ai parametri passati. Associa i file al record, se richiesto e previsto, infine lo restituisce serializzato come descritto in \S \ref{api:dettaglio}.
+
+\subsubsection{Destroy}
+Implementa l'endpoint descritto in \S \ref{api:eliminazione}. Cerca e carica il record con l'identificativo richiesto dal database. Se questo è presente, verifica che l'utente sia autorizzato a eliminarlo. Procede con l'eliminazione fisica o logica, dove previsto, e infine lo restituisce serializzato come descritto in \S \ref{api:dettaglio}.
 
 \subsection{APIController}
 \verb|APIController| è la classe base da cui eredita ogni controller della API implementato. Include del codice per gestire automaticamente le eccezioni che possono essere sollevate dal backend e il relativo \emph{rendering} dell'errore. A quelli già presenti ho deciso di aggiungere la gestione delle eccezioni:
