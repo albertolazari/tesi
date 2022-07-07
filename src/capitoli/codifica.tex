@@ -7,8 +7,6 @@ La codifica dei modelli passa per tre fasi successive:
 \end{enumerate}
 
 \subsection{Migrazioni del database}
-\intro{Comando} \texttt{rails generate} \intro{e migrazione prodotta.}
-
 Basandosi su quanto definito nella fase di progettazione dei modelli, descritta nel capitolo \ref{cap:modelli}, questi sono stati generati utilizzando da linea di comando il generatore automatico \verb|rails generate model| o, in versione ridotta, \verb|rails g model|. Il comando accetta come argomenti:
 \begin{itemize}
 	\item il nome del modello, al singolare e in \emph{CamelCase};
@@ -104,11 +102,28 @@ class CreateOrganizers < ActiveRecord::Migration[7.0]
   end
 end
 \end{minted}
+Utilizzando il metodo \verb|change|, le migrazioni possono modificare la struttura del database secondo quando specificato nella migrazione, senza necessità di ricorrere a \emph{downtime} del server e di eseguire il rollback alla versione dello schema del database precedente, se fosse necessario.
 
-\subsection{Associazioni a modelli e file}
+Il generatore produce altri due file, oltre alla migrazione:
+\begin{minted}{ruby}
+# app/models/organizer.rb
+class Organizer < ApplicationRecord
+  belongs_to :platform
+end
+
+# spec/models/organizer_spec.rb
+require 'rails_helper'
+
+RSpec.describe Organizer, type: :model do
+  pending "add some examples to (or delete) #{__FILE__}"
+end
+\end{minted}
+Il primo contiene la definizione della classe, in cui andranno inseriti i metodi, le validazioni e le associazioni sul modello, descritte in \S \ref{code:association} e \S \ref{code:validates}, mentre nel secondo andranno definiti i test di unità per il modello, descritti in \S \ref{code:spec}.
+
+\subsection{Associazioni a modelli e file} \label{code:association}
 \intro{Associazioni di Active Record e Active Storage.}
 
-\subsection{Validazioni}
+\subsection{Validazioni} \label{code:validates}
 \intro{Validazioni sugli attributi del modello e le associazioni.}
 
 \section{Controller}
@@ -121,5 +136,5 @@ end
 \section{Gestione dei permessi}
 \intro{Funzionamento e uso della gemma ``Pundit'' per la gestione dei permessi relativi agli endpoint dell'API, scope e metodi relativi alle action, esempio di gestione della gerarchia che andrà rivisto}
 
-\section{Test di unità}
+\section{Test di unità} \label{code:spec}
 \intro{Descrizione della gemma ``RSpec'', che fornisce strumenti per lo sviluppo guidato dal comportamento (behaviour-driven development), esempi di modelli testati.}
