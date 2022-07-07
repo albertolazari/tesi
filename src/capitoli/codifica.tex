@@ -70,7 +70,11 @@ class CreateOrganizers < ActiveRecord::Migration[7.0]
 	end
 end
 \end{minted}
-Successivamente questa è stata modificata, aggiungendo i vincoli \verb|NOT NULL|, la \emph{foreign key} verso l'utente creatore e il valore di default per il ruolo, prima di eseguire effettivamente la migrazione. La migrazione definitiva è stata la seguente:
+Successivamente questa è stata modificata, aggiungendo i vincoli \verb|NOT NULL|, la chiave esterna verso l'utente creatore e il valore di default per il ruolo, prima di eseguire effettivamente la migrazione.
+
+Si noti come non sia necessario specificare la chiave primaria. Il comportamento di \emph{default} di Active Record è introdurre automaticamente un identificativo progressivo, chiamato \verb|id|, di tipo \verb|bigint|. Inoltre \verb|timestamps| genera automaticamente degli attributi gestiti dalla gemma, per tracciare l'istante di creazione e ultima modifica dei record.
+
+La migrazione definitiva è stata la seguente:
 \begin{minted}{ruby}
 # db/migrate/{timestamp}_create_organizers.rb
 
@@ -107,7 +111,7 @@ Utilizzando il metodo \verb|change|, le migrazioni possono modificare la struttu
 Il generatore produce altri due file, oltre alla migrazione:
 \begin{minted}{ruby}
 # app/models/organizer.rb
-class Organizer < ApplicationRecord
+class Organizer < ActiveRecord::Base
   belongs_to :platform
 end
 
@@ -118,10 +122,33 @@ RSpec.describe Organizer, type: :model do
   pending "add some examples to (or delete) #{__FILE__}"
 end
 \end{minted}
-Il primo contiene la definizione della classe, in cui andranno inseriti i metodi, le validazioni e le associazioni sul modello, descritte in \S \ref{code:association} e \S \ref{code:validates}, mentre nel secondo andranno definiti i test di unità per il modello, descritti in \S \ref{code:spec}.
+Il primo contiene la definizione della classe, in cui andranno inseriti i metodi, le validazioni e le associazioni sul modello, descritte in \S \ref{code:association} e \S \ref{code:validates}.\ Nel secondo andranno definiti i test di unità per il modello, descritti in \S \ref{code:spec}.
 
 \subsection{Associazioni a modelli e file} \label{code:association}
-\intro{Associazioni di Active Record e Active Storage.}
+Una volta generata la struttura del modello attraverso le migrazioni del database, è stato necessario associare tra loro i modelli, al livello dell'applicazione, secondo le relazioni espresse nel diagramma ER prodotto durante la fase di analisi e refactor (\S \ref{cap:modelli}). Per farlo, sono stati utilizzati i metodi forniti da \verb|ActiveRecord::Base|, classe ereditata da tutti i modelli. Nel progetto, in realtà, tutti i modelli ereditano da \verb|ApplicationRecord|, che a sua volta eredita da \verb|ActiveRecord::Base|, ma viene utilizzato per aggiunge metodi di utilità a tutti i modelli implementati.
+
+Rails incentiva l'implementazione di associazioni bidirezionali, attraverso l'utilizzo dei metodi:
+\begin{itemize}
+	\item \verb|belongs_to|: utilizzato per specificare l'associazione con il modello di cui la classe memorizza la chiave esterna;
+	\item \verb|has_one|: specifica l'associazione con un record di un modello che memorizza la chiave esterna alla classe;
+	\item \verb|has_many|: specifica l'associazione con più record di un modello che memorizza la chiave esterna alla classe;
+	\item \verb|has_and_belongs_to_many|: permette di specificare associazioni del tipo ``molti a molti'', utilizzando una tabella, creata manualmente, che possiede le chiavi esterne ad entrambi i modelli coinvolti.
+\end{itemize}
+Oltre alle associazioni con i modelli sono state specificate le associazioni con i file. Queste vengono gestite con la gemma Active Storage, che fornisce i metodi per eseguire l'associazione (\emph{attach}) dei file, chiamati \emph{attachments}: \verb|has_one_attached| e \verb|has_many_attached|.
+
+Proseguendo con l'esempio dell'implementazione degli organizzatori, il file della classe \verb|Organizer| con le associazioni dichiarate risulta essere il seguente:
+\begin{minted}{ruby}
+class Organizer < ApplicationRecord
+  belongs_to :platform
+  belongs_to :creator, class_name: 'User', inverse_of: :created_organizers, optional: true
+
+  has_many :users, dependent: :nullify
+  has_one :managed_platform, class_name: 'Platform', inverse_of: :main_organizer, dependent: :nullify
+  has_many :locations, dependent: :nullify
+
+  has_one_attached :logo
+end
+\end{minted}
 
 \subsection{Validazioni} \label{code:validates}
 \intro{Validazioni sugli attributi del modello e le associazioni.}
