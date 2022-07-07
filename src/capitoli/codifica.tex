@@ -35,9 +35,9 @@ Di conseguenza, la sintassi generale è la seguente:
 \begin{minted}{shell}
 rails g model ModelName attr_1:type:[uniq] attr_2:type:[uniq] ...
 \end{minted}
-Portando un esempio reale, per la generazione del modello degli organizzatori è stato usato il comando seguente:
+Portando un esempio, per la generazione di una versione semplificata del modello degli organizzatori può essere usato il comando seguente:
 \begin{minted}{shell}
-rails g model Organizer name:string vat:string:uniq sdi:string:uniq address:string city:string country:string zip_code:string status:integer email:string email_pec:string phone:string finished_webhook:string add_participant_webhook:string remove_participant_webhook:string platform:references creator_id:bigint
+rails g model Organizer name:string vat:string:uniq address:string platform:references creator_id:bigint
 \end{minted}
 che ha prodotto la seguente migration:
 \begin{minted}{ruby}
@@ -48,33 +48,21 @@ class CreateOrganizers < ActiveRecord::Migration[7.0]
 	create_table :organizers do |t|
 		t.string :name
 		t.string :vat
-		t.string :sdi
 		t.string :address
-		t.string :city
-		t.string :country
-		t.string :zip_code
-		t.integer :status
-		t.string :email
-		t.string :email_pec
-		t.string :phone
-		t.string :finished_webhook
-		t.string :add_participant_webhook
-		t.string :remove_participant_webhook
 		t.references :platform, foreign_key: true
 		t.bigint :creator_id
 
 		t.timestamps
 	end
 	add_index :organizers, :vat, unique: true
-	add_index :organizers, :sdi, unique: true
 	end
 end
 \end{minted}
-Successivamente questa è stata modificata, aggiungendo i vincoli \verb|NOT NULL|, la chiave esterna verso l'utente creatore e il valore di default per il ruolo, prima di eseguire effettivamente la migrazione.
+Successivamente questa viene modificata, aggiungendo i vincoli \verb|NOT NULL| e la chiave esterna verso l'utente creatore prima di eseguire effettivamente la migrazione.
 
 Si noti come non sia necessario specificare la chiave primaria. Il comportamento di \emph{default} di Active Record è introdurre automaticamente un identificativo progressivo, chiamato \verb|id|, di tipo \verb|bigint|. Inoltre \verb|timestamps| genera automaticamente degli attributi gestiti dalla gemma, per tracciare l'istante di creazione e ultima modifica dei record.
 
-La migrazione definitiva è stata la seguente:
+La migrazione dopo la modifica è la seguente:
 \begin{minted}{ruby}
 # db/migrate/{timestamp}_create_organizers.rb
 
@@ -83,18 +71,7 @@ class CreateOrganizers < ActiveRecord::Migration[7.0]
     create_table :organizers do |t|
       t.string :name, null: false
       t.string :vat, null: false
-      t.string :sdi, null: false
       t.string :address, null: false
-      t.string :city, null: false
-      t.string :country, null: false
-      t.string :zip_code, null: false
-      t.integer :status, null: false, default: Organizer.statuses[:active]
-      t.string :email
-      t.string :email_pec
-      t.string :phone
-      t.string :finished_webhook
-      t.string :add_participant_webhook
-      t.string :remove_participant_webhook
       t.references :platform, null: false, foreign_key: true
       t.bigint :creator_id, null: false
 
@@ -102,7 +79,6 @@ class CreateOrganizers < ActiveRecord::Migration[7.0]
     end
     add_foreign_key :organizers, :users, column: :creator_id
     add_index :organizers, :vat, unique: true
-    add_index :organizers, :sdi, unique: true
   end
 end
 \end{minted}
@@ -111,21 +87,25 @@ Utilizzando il metodo \verb|change|, le migrazioni possono modificare la struttu
 Il generatore produce altri due file, oltre alla migrazione:
 \begin{minted}{ruby}
 # app/models/organizer.rb
+
 class Organizer < ActiveRecord::Base
   belongs_to :platform
 end
+\end{minted}
 
+\begin{minted}{ruby}
 # spec/models/organizer_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe Organizer, type: :model do
   pending "add some examples to (or delete) #{__FILE__}"
 end
 \end{minted}
-Il primo contiene la definizione della classe, in cui andranno inseriti i metodi, le validazioni e le associazioni sul modello, descritte in \S \ref{code:association} e \S \ref{code:validates}.\ Nel secondo andranno definiti i test di unità per il modello, descritti in \S \ref{code:spec}.
+Il primo contiene la definizione della classe, in cui andranno inseriti i metodi, le validazioni e le associazioni sul modello, descritte in \S \ref{code:association} e \S \ref{code:validates}. Nel secondo andranno definiti i test di unità per il modello, descritti in \S \ref{code:spec}.
 
 \subsection{Associazioni a modelli e file} \label{code:association}
-Una volta generata la struttura del modello attraverso le migrazioni del database, è stato necessario associare tra loro i modelli, al livello dell'applicazione, secondo le relazioni espresse nel diagramma ER prodotto durante la fase di analisi e refactor (\S \ref{cap:modelli}). Per farlo, sono stati utilizzati i metodi forniti da \verb|ActiveRecord::Base|, classe ereditata da tutti i modelli. Nel progetto, in realtà, tutti i modelli ereditano da \verb|ApplicationRecord|, che a sua volta eredita da \verb|ActiveRecord::Base|, ma viene utilizzato per aggiunge metodi di utilità a tutti i modelli implementati.
+Una volta generata la struttura del modello attraverso le migrazioni del database, è stato necessario associare tra loro i modelli, al livello dell'applicazione, secondo le relazioni espresse nel diagramma ER prodotto durante la fase di analisi e refactor (\S \ref{cap:modelli}). Per farlo, sono stati utilizzati i metodi forniti da \verb|ActiveRecord::Base|, classe ereditata da tutti i modelli. Nel progetto, in realtà, tutti i modelli ereditano dalla classe \verb|ApplicationRecord|, che a sua volta eredita da \verb|ActiveRecord::Base|, ma viene utilizzato per aggiunge metodi di utilità comuni a tutti i modelli implementati.
 
 Rails incentiva l'implementazione di associazioni bidirezionali, attraverso l'utilizzo dei metodi:
 \begin{itemize}
@@ -138,20 +118,77 @@ Oltre alle associazioni con i modelli sono state specificate le associazioni con
 
 Proseguendo con l'esempio dell'implementazione degli organizzatori, il file della classe \verb|Organizer| con le associazioni dichiarate risulta essere il seguente:
 \begin{minted}{ruby}
+# app/models/organizer.rb
+
 class Organizer < ApplicationRecord
   belongs_to :platform
   belongs_to :creator, class_name: 'User', inverse_of: :created_organizers, optional: true
 
-  has_many :users, dependent: :nullify
-  has_one :managed_platform, class_name: 'Platform', inverse_of: :main_organizer, dependent: :nullify
   has_many :locations, dependent: :nullify
 
   has_one_attached :logo
 end
 \end{minted}
+L'associazione \verb|has_many| è l'altra estremità di un'associazione \verb|belongs_to| dichiarata nel modello \verb|Location| e si basa sulla convenzione dei nomi di Rails per cui \verb|Location| deve avere una colonna nel database chiamata \verb|organizer_id|, che punta all'identificativo di un organizzatore. Serve per rendere accessibili le \emph{location} gestite dall'organizzatore, avendo il record dell'organizzatore stesso.
 
 \subsection{Validazioni} \label{code:validates}
 \intro{Validazioni sugli attributi del modello e le associazioni.}
+
+L'ultima fase di sviluppo della parte di modello sono le validazioni sugli attributi e le associazioni, che vengono codificate utilizzando principalmente i validatori forniti da Active Record, da altre gemme o creati manualmente. Le validazioni inseriscono dei messaggi di errore in un array associato al modello che si sta validando; prima di memorizzare nel database i dati del record che si vuole salvare, ad esempio chiamando i metodi \verb|save| o \verb|create|, viene chiamato il metodo \verb|valid?|, che controlla che l'array di errori sia vuoto, altrimenti è possibile accedervi e mostrare gli errori, anche come risposta della API. Le validazioni fornite da Active Record permettono di verificare vari aspetti degli attributi, come la presenza di un valore (\verb|NOT NULL|), il formato di una stinga o i controlli sui valori numerici e molti altri.
+
+Aggiungendo le validazioni sugli attributi, il file di esempio degli organizzatori diventa:
+\begin{minted}{ruby}
+# app/models/organizer.rb
+
+class Organizer < ApplicationRecord
+  belongs_to :platform
+  belongs_to :creator, class_name: 'User', inverse_of: :created_organizers, optional: true
+
+  has_many :locations, dependent: :nullify
+
+  has_one_attached :logo
+  validates :logo, attached: true, content_type: ['image/png', 'image/jpeg']
+
+  validates :name,
+            :vat,
+            :address,
+            presence: true
+
+  validates :vat, uniqueness: true
+
+  validates :creator, presence: true, on: :create
+  validate :creator_not_changed
+
+private
+
+  def creator_not_changed
+    errors.add :creator, :cannot_change if creator_changed? && persisted?
+  end
+end
+\end{minted}
+
+\subsection{Associazione a \texttt{creator}}
+Quasi tutti i modelli implementati nel corso del progetto hanno un'associazione con il modello degli utenti, che traccia l'utente che ha creato il record. Sono necessarie diverse righe di codice per implementare questa funzionalità, non sempre intuitive oltretutto, quindi ho deciso di incapsculare questa configurazione all'interno di un concern, una funzionalità offerta da Active Support, che sfrutta i moduli di Ruby. Dopo l'operazione di refactor il file del modello di esempio diventa:
+\begin{minted}{ruby}
+# app/models/organizer.rb
+
+class Organizer < ApplicationRecord
+	include Creator
+	belongs_to :platform
+
+	has_many :locations, dependent: :nullify
+
+	has_one_attached :logo
+	validates :logo, attached: true, content_type: ['image/png', 'image/jpeg']
+
+	validates :name,
+			:vat,
+			:address,
+			presence: true
+
+	validates :vat, uniqueness: true
+end
+\end{minted}
 
 \section{Controller}
 \subsection{APIController}
