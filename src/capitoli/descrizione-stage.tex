@@ -77,18 +77,18 @@ Essendo il progetto un lavoro di riscrittura completa, è stato deciso di sfrutt
 
 \subsection{Ruby}
 Ruby \footcite{site:ruby} è un linguaggio di \emph{scripting} interpretato, a oggetti e dinamicamente tipizzato, che punta alla produttività, mantenendo una sintassi semplice ed elegante e una bassa curva di apprendimento. La sintassi prevede un uso limitato della punteggiatura e di elementi considerati superflui, preferendo uno stile spesso naturale e intuitivo, che migliora la leggibilità del codice:
-\begin{minted}{ruby}
+\begin{code}{Esempio della sintassi di Ruby}
 	user.updated_at = 1.hour.ago
-\end{minted}
+\end{code}
 
 \noindent In Ruby ogni \emph{statement} è un'espressione, che ritorna un risultato, infatti ogni blocco di codice ritorna il risultato dell'ultima istruzione. Nell'esempio seguente la funzione \verb|get_image_from| ritorna l'immagine dall'array \verb|attribute|, se presente; altrimenti ritorna \verb|nil|, perché l'espressione non ha ritornato un risultato:
-\begin{minted}{ruby}
+\begin{code}{Esempio di una funzione in Ruby}
 	def get_image_from attribute do
 		attribute[:image] if attribute.has_key? :image
 	end
 
 	user.image = get_image_from uploaded_files
-\end{minted}
+\end{code}
 
 \noindent Il linguaggio è multi-paradigma, ma fortemente orientato agli oggetti: perfino i tipi primiti e i metodi vengono trattati come oggetti. Aggiungendo la possibilità di estendere ogni classe con nuovi metodi, anche successivamente alla sua dichiarazione, si ottiene un linguaggio estremamente flessibile ed estendibile, che consente di adattare il comportamento del linguaggio stesso alle proprie necessità.
 
