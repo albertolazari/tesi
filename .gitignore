@@ -226,3 +226,6 @@
 **/build/
 
 src/*.pdf
+
+**/__latexindent_temp.tex
+
