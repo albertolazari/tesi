@@ -1,8 +1,27 @@
 \section{Introduzione}
 La prima attività che ho dovuto svolgere è stata la definizione dei modelli del nuovo backend. Purtroppo l'architettura già presente nel vecchio backend, soprattutto lato database, aveva diversi difetti e andava rivista interamente, quindi è stato necessario partire da un'analisi di quanto già fatto, per capire se fosse necessario effettuare del refactor nella struttura dei dati. In molti casi le entità contenevano molti attributi superflui o non adatti ad essere associati alla specifica entità, perché più adatti ad essere associati attraverso una relazione a un'altra entità.
 
-In questo capitolo vengono riportati i cambiamenti e le scelte più significative che sono state fatte durante questa fase.
+In questo capitolo vengono riportati i cambiamenti e le scelte più significative che sono state fatte durante questa fase, che hanno portato alla produzione del diagramma ER completo dell'applicazione, riportato nell'appendice \ref{cap:ER}.
 
 \section{Modifiche significative effettuate}
 \subsection{Utenti}
-La prima tabella analizzata è stata quella degli utenti, essendo 
+La prima tabella analizzata è stata quella degli utenti. Nella versione precedente le informazioni relative al modello degli utenti erano divise in tre entità:
+\begin{itemize}
+	\item \verb|e_users|: conteneva i dettagli principali degli utenti, come nome, cognome e email, i campi per la gestione dell'autenticazione e altri, che però erano inutilizzati;
+	\item \verb|e_partecipants|: era dedicata agli utenti partecipanti. Conteneva un sottoinsieme dei campi di \verb|e_users|:
+	\begin{itemize}
+		\item \verb|companyId|;
+		\item \verb|firstName|;
+		\item \verb|lastName|;
+		\item \verb|email|;
+		\item \verb|phone|;
+		\item \verb|createdAt|;
+		\item \verb|status|.
+	\end{itemize}
+	\item \verb|e_users_levels|: memorizzava i ruoli degli utenti e, per ogni azione esposta dall'API, un campo booleano che indicava se quel ruolo avesse l'autorizzazione di effettuare quell'azione.
+\end{itemize}
+Ho deciso di raccogliere queste informazioni in un unico modello, con i campi dell'entità \verb|e_partecipants|, a cui ho aggiunto l'immagine dell'utente, un enumerazione che ne indica il ruolo, invece di utilizzare un'intera entità come era stato fatto precedentemente. I campi necessari per l'autenticazione sono stati omessi, perché già presenti nel \emph{template} dei progetti di Moku.
+
+La motivazione alla base della scelta di non codificare l'autorizzazione in un modello è stata la complessità di questo processo, che spesso dipende anche dall'oggetto su cui si vuole eseguire un'azione, qundi non esclusivamente dal ruolo dell'utente.
+
+La scelta di unire i partecipanti (corretti in ``participants'', invece di ``partecipants'') al resto degli utenti è stata presa per ridurre la duplicazione dei dati, in questo caso rilevante, perché le due entità, una volta riviste, avrebbero avuto quasi tutti i campi in comune. Inoltre, seppur vero che i partecipanti non possono effettuare l'autenticazione nell'applicazione web, utilizzano l'applicazione \emph{mobile}, che utilizzerà lo stesso backend.
