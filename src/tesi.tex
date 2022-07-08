@@ -120,6 +120,22 @@
   breaklines
 }
 
+% Environment per il codice
+% si utilizza con \begin{code}[lang]{caption}
+\makeatletter
+\newenvironment{code}[2][ruby]
+{
+  \VerbatimEnvironment
+  \begin{listing}[H]
+    \caption{#2}
+    \begin{minted}{#1}
+}
+{
+    \end{minted}
+  \end{listing}
+}
+\makeatother
+
 % file con le impostazioni personali
 \input{tesi-config}
 
