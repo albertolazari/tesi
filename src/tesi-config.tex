@@ -147,9 +147,15 @@
     ma-cro-istru-zio-ne
 }
 
+% Nome della lista degli esempi di codice
+\renewcommand{\listoflistingscaption}{Elenco degli esempi di codice}
+
 \newcommand{\sectionname}{sezione}
-\addto\captionsitalian{\renewcommand{\figurename}{Figura}
-                       \renewcommand{\tablename}{Tabella}}
+\addto\captionsitalian{
+    \renewcommand{\figurename}{Figura}
+    \renewcommand{\tablename}{Tabella}
+    \renewcommand{\listingscaption}{Codice}
+}
 
 \newcommand{\glsfirstoccur}{\ap{{[g]}}}
 
