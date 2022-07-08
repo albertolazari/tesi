@@ -1,36 +1,369 @@
 \section{Introduzione}
-\intro{Spiegazione del lavoro svolto in questa fase.}
+L'API è la parte più importante del backend: è l'interfaccia che viene esposta per interagire con l'applicazione. Viene utilizzata dal frontend per ottenere i dati necessari a soddisfare le richieste degli utenti, che, essendo già sviluppato, si aspetta di poter eseguire certe richieste e di ricevere una risposta di un certo tipo. È previsto che il frontend debba adattarsi ai cambiamenti del nuovo backend, una volta pronto, ma questi dovrebbero essere ridotti al minimo, quindi nella progettazione dei controller ho cercato di trovare il giusto equilibrio con quanto era stato fatto in precedenza e lo stile che viene suggerito dal framework.
 
 \section{Notazione adottata}
-\intro{Spiegazione convenzioni adottate nella descrizione degli endpoint.}
+Prima di descrivere la struttura delle operazioni viene illustrata la notazione adottata per gli endpoint:
+\begin{itemize}
+	\item la prima parte indica il metodo HTTP utilizzato: uno tra GET, POST, PUT, PATCH e DELETE, negli endpoint realizzati;
+	\item la seconda parte indica l'URI della risorsa relativa all'endpoint, senza specificare l'URL dell'applicazione;
+	\item tutti gli URI degli endpoint implementati sono all'interno del percorso \verb|/api|;
+	\item alcuni endpoint si riferiscono a una specifica risorsa invece che a una lista o collezione. In tal caso l'identificativo della risorsa viene rappresentato con la notazione \verb|:id| o \verb|:resource_id|;
+	\item viene utilizzata la parola \texttt{resources} per rappresentare il nome di un modello generico.
+\end{itemize}
+Ad esempio:
+\begin{enumerate}
+	\item una chiamata con metodo HTTP PUT a \verb|https://app.evvvents.it/api/| \\ \verb|platforms/2| risponde all'endpoint \verb|PUT /api/platforms/:id|;
+	\item a un endpoint generico \verb|DELETE /api/resources/:id| può rispondere alle chiamate \verb|DELETE /api/locations/1| o \verb|DELETE /api/users/4|.
+\end{enumerate}
+Ad ogni risposta viene associato uno stato HTTP. In caso di successo viene sempre restituito il codice \verb|200|, mentre gli errori restituiscono codici diversi, in base al contesto. I codici di errore genrali, che possono essere restituiti da qualsiasi endpoint implementato sono:
+\begin{itemize}
+	\item \verb|404|, nel caso in cui l'endpoint o la risorsa richiesta non esista;
+	\item \verb|500|, nel caso di errori generici nel backend, che non sono stati gestiti esplicitamente.
+\end{itemize}
+Gli altri casi di errore vengono descritti nelle sezioni successive.
 
 \section{Descrizione delle funzionalità esposte}
-\intro{Descrizione degli endpoint esposti dalla API, in generale per ogni modello e nello specifico per le eccezioni.}
+Di seguito vengono descritte le operazioni che deve essere possibile eseguire su ogni modello dell'applicazione, chiamando i relativi endpoint.
 
 \subsection{Lista delle risorse} \label{api:lista}
-\intro{Route index, attributi mostrati per ogni modello implementato.}
+Risponde all'endpoint \verb|GET /api/resources|, restituendo la lista delle risorse associate al modello specificato, generalmente ordinate per nome, dove presente. La risposta prevede l'utilizzo della paginazione, con cui si può interagire attraverso i due parametri GET opzionali:
+\begin{enumerate}
+	\item \verb|page|, che indica il numero della pagina che si vuole visualizzare. Se non indicato, la risposta mostrerà la prima pagina;
+	\item \verb|per_page|, che indica il numero di risorse presenti per pagina. Se non indicato vengono mostrate 25 risorse per pagina, valore già utilizzato nel frontend.
+\end{enumerate}
+Di ogni risorsa vengono mostrate solo le informazioni essenziali, invece di tutte quelle fornite dal modello. Di seguito vengono elencati gli attributi restituiti per ogni risorsa, nella lista di ogni modello implementato:
+
+\subsubsection{User}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|email|,
+	\item \verb|first_name|,
+	\item \verb|last_name|,
+	\item \verb|role|,
+	\item \verb|organizer_id|
+\end{itemize}
+
+\subsubsection{Plan}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|description|,
+	\item \verb|price|
+\end{itemize}
+
+\subsubsection{Platform}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|website|,
+	\item \verb|host_url|,
+	\item \verb|main_organizer_id|
+\end{itemize}
+
+\subsubsection{Organizer}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|platform_id|,
+	\item \verb|address|,
+	\item \verb|city|,
+	\item \verb|country|
+\end{itemize}
+
+\subsubsection{Location}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|organizer_id|
+\end{itemize}
 
 \subsection{Dettagli di una risorsa} \label{api:dettaglio}
-\intro{Route show, attributi mostrati per ogni modello implementato.}
+Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli della risorsa specificata. I dettagli non comprendono la totalità degli attributi del modello, ma un suo sottinsieme selezionato, per nascondere all'utente eventuali dettagli implementativi non rilevanti o attributi di tracciamento, come il creatore o l'istante di creazione e ultima modifica del record. Di seguito vengono elencati, per ogni modello, gli attributi restituiti per ogni risorsa:
+
+\subsubsection{User}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|email|,
+	\item \verb|image|,
+	\item \verb|first_name|,
+	\item \verb|last_name|,
+	\item \verb|role|,
+	\item \verb|phone|,
+	\item \verb|status|,
+	\item \verb|organizer_id|
+\end{itemize}
+
+\subsubsection{Plan}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|price|,
+	\item \verb|description|,
+	\item \verb|max_events|,
+	\item \verb|max_participants|,
+	\item \verb|max_integrations|,
+	\item \verb|max_storage|,
+	\item \verb|desk_number|
+\end{itemize}
+
+\subsubsection{Platform}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|logo|,
+	\item \verb|logo_dark|,
+	\item \verb|favicon|,
+	\item \verb|logo_small|,
+	\item \verb|website|,
+	\item \verb|host_url|,
+	\item \verb|privacy_url|,
+	\item \verb|powered_by|,
+	\item \verb|action_bar_color|,
+	\item \verb|side_bar_color|,
+	\item \verb|border_color|,
+	\item \verb|sign_in_color|,
+	\item \verb|event_color|,
+	\item \verb|status|,
+	\item \verb|plan_id|,
+	\item \verb|main_organizer_id|
+\end{itemize}
+
+\subsubsection{Organizer}
+\begin{itemize}
+	\item \verb|id|,
+    \item \verb|name|,
+    \item \verb|logo|,
+    \item \verb|platform_id|,
+    \item \verb|vat|,
+    \item \verb|sdi|,
+    \item \verb|address|,
+    \item \verb|city|,
+    \item \verb|country|,
+    \item \verb|zip_code|,
+    \item \verb|status|,
+    \item \verb|email|,
+    \item \verb|email_pec|,
+    \item \verb|phone|,
+    \item \verb|finished_webhook|,
+    \item \verb|add_participant_webhook|,
+    \item \verb|remove_participant_webhook|
+\end{itemize}
+
+\subsubsection{Location}
+\begin{itemize}
+	\item \verb|id|,
+	\item \verb|name|,
+	\item \verb|status|,
+	\item \verb|description|,
+	\item \verb|image|,
+	\item \verb|address|,
+	\item \verb|civic|,
+	\item \verb|city|,
+	\item \verb|province|,
+	\item \verb|zip_code|,
+	\item \verb|google_place_identifier|,
+	\item \verb|latitude|,
+	\item \verb|longitude|,
+	\item \verb|how_to_get_by_car|,
+	\item \verb|how_to_get_by_plane|,
+	\item \verb|how_to_get_by_train|,
+	\item \verb|internal_notes|,
+	\item \verb|organizer_id|
+\end{itemize}
 
 \subsection{Creazione di una risorsa} \label{api:creazione}
-\intro{Route create.}
+Risponde all'endpoint \verb|POST /api/resources|, creando un nuovo record del relativo modello, con gli attributi specificati nel corpo della richiesta. Restituisce nella risposta i dettagli della risorsa appena creata, se l'operazione è avvenuta con successo.
 
 \subsection{Modifica di una risorsa} \label{api:modifica}
-\intro{Route update.}
+Risponde agli endpoint \verb|PUT /api/resources/:id| e \verb|PATCH /api/resources/:id|, modificando gli attributi della risorsa, specificati nel corpo della richiesta, con i valori passati. Restituisce nella risposta i dettagli della risorsa appena modificata, se l'operazione è avvenuta con successo.
 
 \subsection{Eliminazione di una risorsa} \label{api:eliminazione}
-\intro{Route delete.}
+Risponde all'endpoint \verb|DELETE /api/resources/:id|, eliminando la risorsa fisicamente dal database oppure logicamente, impostando lo stato del record ad \verb|archived|, nei modelli in cui è prevista questa modalità di cancellazione. Restituisce nella risposta i dettagli della risorsa appena eliminata, se l'operazione è avvenuta con successo.
 
 \subsection{Lista dei ruoli degli utenti} \label{api:utenti-lista-ruoli}
+Risponde all'endpoint \verb|GET /api/users/roles|, elencando tutti i possibili ruoli di un utente:
+\begin{itemize}
+	\item super admin;
+	\item admin;
+	\item manager;
+	\item staff;
+	\item speaker;
+	\item participant.
+\end{itemize}
+Questa è un'informazione utile al frontend, che utilizza già estensivamente, quindi andava fornita attraverso un endpoint dedicato, non potendo essere reperita in altri modi. Per la struttura attuale dell'applicazione la risposta è sempre la stessa, perché i ruoli sono \emph{hard coded} nel software.
 
 \subsection{Lista delle risorse interne a una specifica risorsa} \label{api:lista-risorsa}
+Alcuni modelli sono logicamente contenuti all'interno di altri, si vuole quindi poter elencare tutte le risorse contenute in una seconda risorsa. Nei modelli che sono stati implementati durante il progetto di stage questo accade in due casi:
+\begin{enumerate}
+	\item gli organizzatori stanno all'interno di una specifica piattaforma;
+	\item ogni organizzatore crea e utilizza delle \emph{location}.
+\end{enumerate} In questi casi se si vogliono elencare le risorse \verb|rescources_b| contenute nella risorsa \verb|resource_a| con identificativo \verb|:id| si effettua una chiamata all'endpoint \verb|GET /api/| \verb|resources_a/:id/resources_b|, ad esempio per elencare tutti gli organizzatori della piattaforma con id 10 si chiama \verb|GET /api/platforms/10/organizers|. È comunque possibile ottenere la lista di tutte le risorse relative a un modello, anche quando questo stia logicamente all'interno di un'altra risorsa. Ad esempio è comunque possibile ottenere la lista di tutti gli organizzatori di tutte le piattaforme chiamando \verb|GET /api/organizers|.
 
 \subsection{Creazione di una risorsa all'interno di un'altra risorsa} \label{api:creazione-risorsa}
+Nei casi appena sopracitati è necessario specificare la risorsa in cui sarà contenuta quella che si intende creare, quindi ho ritenuto oppurtuno rendere necessaria la creazione di queste particolari risorse chiamando l'endpoint \verb|POST /api/resources_a/:id/resources_b|, invece che con l'endpoint descritto nella sotto-sezione \ref{api:creazione}, che non viene esposto per i modelli interessati.
+
 
 \section{Gestione dei permessi}
-\intro{Permessi per le categorie di utenti per ogni controller.}
+L'API, oltre ad essere utilizzata dal frontend, potrebbe essere usata da qualsiasi altro tipo di \emph{client}, con o senza buone intenzioni, quindi è fondamentale che siano presenti dei controlli sulle autorizzazioni degli utenti che effettuano richieste, per ogni funzionalità esposta.
+
+\subsection{Autenticazione e autorizzazione}
+Prima di procedere bisogna fare un'importante premessa: autenticazione e autorizzazione, seppur simili, sono due concetti diversi e, come tali, devono essere separati anche strutturalmente.
+
+L'autenticazione avviene quando l'utente esegue l'azione tecnicamente chiamata \emph{sign-in} o \emph{log-in}. Serve a provare che l'utente è chi dichiara di essere. A livello di codifica questa viene gestita da Devise, una gemma adatta allo scopo, dunque non è stato necessario definirne la progettazione.
+
+L'autorizzazione definisce se uno specifico utente o tipologia di utenti abbia o meno il permesso di eseguire una certa azione. Questa sezione si occupa di descrivere le autorizzazioni richieste per ogni funzionalità implementata dall'API, riferita nel modo seguente:
+\begin{itemize}
+	\item \textbf{lista}: si riferisce a quanto descritto in \S \ref{api:lista};
+	\item \textbf{lista nella risorsa}: si riferisce a quanto descritto in \S \ref{api:lista-risorsa};
+	\item \textbf{dettaglio}: si riferisce a quanto descritto in \S \ref{api:dettaglio};
+	\item \textbf{creazione}: si riferisce a quanto descritto in \S \ref{api:creazione} e in \S \ref{api:creazione-risorsa};
+	\item \textbf{modifica}: si riferisce a quanto descritto in \S \ref{api:modifica};
+	\item \textbf{eliminazione}: si riferisce a quanto descritto in \S \ref{api:eliminazione}.
+\end{itemize}
+Nella maggior parte dei casi non sarà necessario entrare così nel dettaglio, perché spesso le azioni di lista e di dettaglio sono accomunate nella categoria delle azioni di lettura, mentre quelle di creazione, modifica ed eliminazione vengono categorizzate come azioni di scrittura, tutte con gli stessi permessi di base, a cui eventualmente si aggiungono ulteriori vincoli o permessi.
 
 \subsection{Permessi richiesti} \label{api:permessi-richiesti}
+I permessi richiesti dalle azioni sui modelli vengono definite in base al ruolo dell'utente autenticato nel sistema al momento della richiesta. La prima condizione per qualsiasi azione quindi, è che l'utente abbia eseguito con successo l'autenticazione (azione per cui ovviamente la condizione non vale). L'azione stessa di autenticazione richiede delle autorizzazioni: sono tutte gestite da Devise, tranne la condizione che prevede che un utente non possa eseguire il \emph{log-in} se ha il ruolo di partecipante, perché l'applicazione web è dedicata solamente alla gestione degli eventi, a cui i partecipanti non devono avere accesso: loro si interfacciano al sistema esclusivamente attraverso l'applicazione \emph{mobile}.
+
+\subsubsection{User}
+L'autorizzazione delle azioni eseguite da un utente su un altro utente sono particolarmente complicate, perché dipendono dalla combinazione dei ruoli dell'utente interessato e dell'utente che ha eseguito la richiesta.
+\begin{itemize}
+	\item \textbf{lettura}: tutti gli utenti possono eseguire questa azione, ognuno però vede solamente gli utenti diversi da se stesso, con ruolo uguale o inferiore all'utente che ha eseguito la richiesta. A questo si aggiunge che:
+	\begin{itemize}
+		\item l'admin vede solamente utenti della sua stessa piattaforma;
+		\item il manager e lo staff vedono solamente utenti della loro stessa organizzatore;
+		\item lo speaker vede solo partecipanti e non può essere visto da nessuno, perché dipende dal modello degli eventi, che non è stato implementato durante lo svolgimento del progetto di stage.
+	\end{itemize}
+	\item \textbf{dettaglio}: ai permessi di lettura si aggiunge il permesso di un utente di vedere i dettagli di se stesso;
+	\item \textbf{scrittura}: i permessi sono gli stessi della lettura, ma in questo caso il ruolo dell'utente che esegue la richiesta deve essere superiore in senso stretto;
+	\item \textbf{modifica}: ai permessi di scrittura si aggiunge il permesso, per un utente, di modificare se stesso;
+	\item \textbf{eliminazione}: ai permessi di scrittura si aggiunge il permesso, per un utente, di eliminare se stesso, nel solo caso in cui questo sia uno speaker;
+	\item \textbf{lista dei ruoli}: si riferisce a \S \ref{api:utenti-lista-ruoli}. Non è richiesta né l'autorizzazione, né l'autenticazione.
+\end{itemize}
+
+\subsubsection{Plan}
+\begin{itemize}
+	\item \textbf{lettura}: concessa a tutti gli utenti;
+	\item \textbf{scrittura}: permessa solamente ai super admin.
+\end{itemize}
+
+\subsubsection{Platform}
+\begin{itemize}
+	\item \textbf{lista}: permessa solamente ai super admin;
+	\item \textbf{dettaglio}: permesso ai super admin e agli admin della piattaforma su cui viene eseguita la richiesta;
+	\item \textbf{scrittura}: permessa solamente ai super admin.
+\end{itemize}
+
+\subsubsection{Organizer}
+\begin{itemize}
+	\item \textbf{lista}: permessa solamente ai super admin;
+	\item \textbf{lista nella piattaforma}: permessa ai super admin e agli admin della piattaforma;
+	\item \textbf{dettaglio}: come la lista nella piattaforma, ma è permesso anche al manager dell'organizzatore;
+	\item \textbf{scrittura}: come la lista nella piattaforma.
+\end{itemize}
+
+\subsubsection{Location}
+\begin{itemize}
+	\item \textbf{lista}: permessa solamente ai super admin;
+	\item \textbf{lista nell'organizzatore}: come il dettaglio per il modello \textbf{Organizer};
+	\item \textbf{dettaglio}: come la lista nell'organizzatore;
+	\item \textbf{scrittura}: come la lista nell'organizzatore;
+\end{itemize}
 
 \subsection{Parametri permessi} \label{api:parametri-permessi}
+L'autorizzazione deve anche occuparsi dei parametri che possono essere permessi nel corpo delle richieste di creazione e modifica delle risorse. Vengono elencati di seguito per ogni modello:
+
+\subsubsection{User}
+Per la creazione:
+\begin{itemize}
+	\item \verb|email|,
+    \item \verb|first_name|,
+    \item \verb|last_name|,
+    \item \verb|role|,
+    \item \verb|phone|,
+    \item \verb|password|,
+    \item \verb|organizer_id|,
+	\item \verb|attachments|:
+	\begin{itemize}
+		\item \verb|image|
+	\end{itemize}
+\end{itemize}
+Per la modifica sono permessi gli stessi parametri consentiti per la creazione, eccetto la password e, se un utente sta modificando se stesso, il ruolo.
+
+\subsubsection{Plan}
+\begin{itemize}
+	\item \verb|name|,
+    \item \verb|description|,
+    \item \verb|max_events|,
+    \item \verb|max_participants|,
+    \item \verb|max_integrations|,
+    \item \verb|max_storage|,
+    \item \verb|desk_number|,
+    \item \verb|price|
+\end{itemize}
+
+\subsubsection{Platform}
+\begin{itemize}
+	\item \verb|name|,
+	\item \verb|website|,
+	\item \verb|host_url|,
+	\item \verb|privacy_url|,
+	\item \verb|powered_by|,
+	\item \verb|action_bar_color|,
+	\item \verb|side_bar_color|,
+	\item \verb|border_color|,
+	\item \verb|sign_in_color|,
+	\item \verb|event_color|,
+	\item \verb|main_organizer|,
+	\item \verb|plan_id|,
+	\item \verb|attachments|:
+	\begin{itemize}
+		\item \verb|logo|,
+		\item \verb|logo_dark|,
+		\item \verb|favicon|,
+		\item \verb|logo_small|
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{Organizer}
+\begin{itemize}
+	\item \verb|name|,
+	\item \verb|vat|,
+	\item \verb|sdi|,
+	\item \verb|address|,
+	\item \verb|city|,
+	\item \verb|country|,
+	\item \verb|zip_code|,
+	\item \verb|email|,
+	\item \verb|email_pec|,
+	\item \verb|phone|,
+	\item \verb|finished_webhook|,
+	\item \verb|add_participant_webhook|,
+	\item \verb|remove_participant_webhook|,
+	\item \verb|attachments|:
+	\begin{itemize}
+		\item \verb|logo|
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{Location}
+\begin{itemize}
+	\item \verb|name|,
+	\item \verb|description|,
+	\item \verb|address|,
+	\item \verb|civic|,
+	\item \verb|city|,
+	\item \verb|province|,
+	\item \verb|zip_code|,
+	\item \verb|google_place_identifier|,
+	\item \verb|latitude|,
+	\item \verb|longitude|,
+	\item \verb|how_to_get_by_car|,
+	\item \verb|how_to_get_by_plane|,
+	\item \verb|how_to_get_by_train|,
+	\item \verb|internal_notes|,
+	\item \verb|attachments|:
+	\begin{itemize}
+		\item \verb|image|
+	\end{itemize}
+\end{itemize}
