@@ -51,7 +51,7 @@ printHelp() {
 }
 
 compile() {
-  pdflatex -output-directory=$BUILD_DIR -interaction=nonstopmode $THESIS 
+  pdflatex -output-directory=$BUILD_DIR -interaction=nonstopmode -shell-escape $THESIS 
 }
 
 makeGlossary() {

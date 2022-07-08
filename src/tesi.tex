@@ -29,6 +29,8 @@
 
 % Importazione package
 
+\PassOptionsToPackage{table}{xcolor}
+
 % colori PDF/A
 \PassOptionsToPackage{dvipsnames}{xcolor}
 
@@ -107,6 +109,33 @@
 %   3. compilare ancora tesi.tex
 \usepackage[backend=biber,style=verbose-ibid,hyperref,backref]{biblatex}
 
+\usepackage{makecell}
+
+\usepackage[outputdir=build]{minted}
+\usemintedstyle{emacs}
+\setminted{
+  bgcolor=lightgray,
+  fontsize=\small,
+  tabsize=2,
+  breaklines
+}
+
+% Environment per il codice
+% si utilizza con \begin{code}[lang]{caption}
+\makeatletter
+\newenvironment{code}[2][ruby]
+{
+  \VerbatimEnvironment
+  \begin{listing}[H]
+    \caption{#2}
+    \begin{minted}{#1}
+}
+{
+    \end{minted}
+  \end{listing}
+}
+\makeatother
+
 % file con le impostazioni personali
 \input{tesi-config}
 
@@ -125,23 +154,27 @@
 
   \chapter{L'azienda}
   \label{cap:azienda}   
-  \input{capitoli/capitolo-1}
+  \input{capitoli/azienda}
 
   \chapter{Descrizione dello stage}
   \label{cap:descrizione-stage}
-  \input{capitoli/capitolo-2}
+  \input{capitoli/descrizione-stage}
 
-  \chapter{Progettazione}
-  \label{cap:progettazione}
-  \input{capitoli/capitolo-3}
+  \chapter{Analisi e refactor dei modelli}
+  \label{cap:modelli}
+  \input{capitoli/modelli}
+
+  \chapter{Progettazione della API}
+  \label{cap:api}
+  \input{capitoli/api}
   
   \chapter{Codifica}
   \label{cap:codifica}
-  \input{capitoli/capitolo-4}
+  \input{capitoli/codifica}
 
   \chapter{Conclusioni}
   \label{cap:conclusioni}
-  \input{capitoli/capitolo-5}
+  \input{capitoli/conclusioni}
   
   \appendix
 
