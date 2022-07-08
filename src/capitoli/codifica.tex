@@ -32,15 +32,20 @@ Basandosi su quanto definito nella fase di progettazione dei modelli, descritta 
 	\item per ogni attributo: l'identificatore \verb|uniq|, che imposta un indice su quella colonna del database, che ne specifica l'unicità nell'entità.
 \end{itemize}
 Di conseguenza, la sintassi generale è la seguente:
-\begin{minted}{shell}
+
+\begin{code}[shell]{Comando \texttt{rails generate model}}
 rails g model ModelName attr_1:type:[uniq] attr_2:type:[uniq] ...
-\end{minted}
-Portando un esempio, per la generazione di una versione semplificata del modello degli organizzatori può essere usato il comando seguente:
-\begin{minted}{shell}
+\end{code}
+
+\noindent Portando un esempio, per la generazione di una versione semplificata del modello degli organizzatori può essere usato il comando seguente:
+
+\begin{code}[shell]{Esempio di utilizzo del comando \texttt{rails generate model}}
 rails g model Organizer name:string vat:string:uniq address:string platform:references creator_id:bigint
-\end{minted}
-che ha prodotto la seguente migration:
-\begin{minted}{ruby}
+\end{code}
+
+\noindent che genera la seguente migrazione:
+
+\begin{code}{Migrazione generata dal comando \texttt{rails generate model}}
 # db/migrate/{timestamp}_create_organizers.rb
 
 class CreateOrganizers < ActiveRecord::Migration[7.0]
@@ -57,13 +62,14 @@ class CreateOrganizers < ActiveRecord::Migration[7.0]
 	add_index :organizers, :vat, unique: true
 	end
 end
-\end{minted}
-Successivamente questa viene modificata, aggiungendo i vincoli \verb|NOT NULL| e la chiave esterna verso l'utente creatore prima di eseguire effettivamente la migrazione.
+\end{code}
+
+\noindent Successivamente questa viene modificata, aggiungendo i vincoli \verb|NOT NULL| e la chiave esterna verso l'utente creatore prima di eseguire effettivamente la migrazione.
 
 Si noti come non sia necessario specificare la chiave primaria. Il comportamento di \emph{default} di Active Record è introdurre automaticamente un identificativo progressivo, chiamato \verb|id|, di tipo \verb|bigint|. Inoltre \verb|timestamps| genera automaticamente degli attributi gestiti dalla gemma, per tracciare l'istante di creazione e ultima modifica dei record.
 
 La migrazione dopo la modifica è la seguente:
-\begin{minted}{ruby}
+\begin{code}{Migrazione modificata manualmente}
 # db/migrate/{timestamp}_create_organizers.rb
 
 class CreateOrganizers < ActiveRecord::Migration[7.0]
@@ -81,19 +87,21 @@ class CreateOrganizers < ActiveRecord::Migration[7.0]
     add_index :organizers, :vat, unique: true
   end
 end
-\end{minted}
-Utilizzando il metodo \verb|change|, le migrazioni possono modificare la struttura del database secondo quando specificato nella migrazione, senza necessità di ricorrere a \emph{downtime} del server e di eseguire il rollback alla versione dello schema del database precedente, se fosse necessario.
+\end{code}
+
+\noindent Utilizzando il metodo \verb|change|, le migrazioni possono modificare la struttura del database secondo quando specificato nella migrazione, senza necessità di ricorrere a \emph{downtime} del server e di eseguire il rollback alla versione dello schema del database precedente, se fosse necessario.
 
 Il generatore produce altri due file, oltre alla migrazione:
-\begin{minted}{ruby}
+
+\begin{code}{File del modello generato dal comando \texttt{rails generate model}}
 # app/models/organizer.rb
 
 class Organizer < ActiveRecord::Base
   belongs_to :platform
 end
-\end{minted}
+\end{code}
 
-\begin{minted}{ruby}
+\begin{code}{File di spec generato dal comando \texttt{rails generate model}}
 # spec/models/organizer_spec.rb
 
 require 'rails_helper'
@@ -101,8 +109,9 @@ require 'rails_helper'
 RSpec.describe Organizer, type: :model do
   pending "add some examples to (or delete) #{__FILE__}"
 end
-\end{minted}
-Il primo contiene la definizione della classe, in cui andranno inseriti i metodi, le validazioni e le associazioni sul modello, descritte in \S \ref{code:association} e \S \ref{code:validates}. Nel secondo andranno definiti i test di unità per il modello, descritti in \S \ref{code:spec}.
+\end{code}
+
+\noindent Il primo contiene la definizione della classe, in cui andranno inseriti i metodi, le validazioni e le associazioni sul modello, descritte in \S \ref{code:association} e \S \ref{code:validates}. Nel secondo andranno definiti i test di unità per il modello, descritti in \S \ref{code:spec}.
 
 \subsection{Associazioni a modelli e file} \label{code:association}
 Una volta generata la struttura del modello attraverso le migrazioni del database, è stato necessario associare tra loro i modelli, al livello dell'applicazione, secondo le relazioni espresse nel diagramma ER prodotto durante la fase di analisi e refactor (\S \ref{cap:modelli}). Per farlo, sono stati utilizzati i metodi forniti da \verb|ActiveRecord::Base|, classe ereditata da tutti i modelli. Nel progetto, in realtà, tutti i modelli ereditano dalla classe \verb|ApplicationRecord|, che a sua volta eredita da \verb|ActiveRecord::Base|, ma viene utilizzato per aggiunge metodi di utilità comuni a tutti i modelli implementati.
@@ -117,7 +126,8 @@ Rails incentiva l'implementazione di associazioni bidirezionali, attraverso l'ut
 Oltre alle associazioni con i modelli sono state specificate le associazioni con i file. Queste vengono gestite con la gemma Active Storage, che fornisce i metodi per eseguire l'associazione (\emph{attach}) dei file, chiamati \emph{attachments}: \verb|has_one_attached| e \verb|has_many_attached|.
 
 Proseguendo con l'esempio dell'implementazione degli organizzatori, il file della classe \verb|Organizer| con le associazioni dichiarate risulta essere il seguente:
-\begin{minted}{ruby}
+
+\begin{code}{Classe \texttt{Organizer} con le associazioni}
 # app/models/organizer.rb
 
 class Organizer < ApplicationRecord
@@ -128,14 +138,16 @@ class Organizer < ApplicationRecord
 
   has_one_attached :logo
 end
-\end{minted}
-L'associazione \verb|has_many| è l'altra estremità di un'associazione \verb|belongs_to| dichiarata nel modello \verb|Location| e si basa sulla convenzione dei nomi di Rails per cui \verb|Location| deve avere una colonna nel database chiamata \verb|organizer_id|, che punta all'identificativo di un organizzatore. Serve per rendere accessibili le \emph{location} gestite dall'organizzatore, avendo il record dell'organizzatore stesso.
+\end{code}
+
+\noindent L'associazione \verb|has_many| è l'altra estremità di un'associazione \verb|belongs_to| dichiarata nel modello \verb|Location| e si basa sulla convenzione dei nomi di Rails per cui \verb|Location| deve avere una colonna nel database chiamata \verb|organizer_id|, che punta all'identificativo di un organizzatore. Serve per rendere accessibili le \emph{location} gestite dall'organizzatore, avendo il record dell'organizzatore stesso.
 
 \subsection{Validazioni} \label{code:validates}
 L'ultima fase di sviluppo della parte di modello sono le validazioni sugli attributi e le associazioni, che vengono codificate utilizzando principalmente i validatori forniti da Active Record, da altre gemme o creati manualmente. Le validazioni inseriscono dei messaggi di errore in un array associato al modello che si sta validando; prima di memorizzare nel database i dati del record che si vuole salvare, ad esempio chiamando i metodi \verb|save| o \verb|create|, viene chiamato il metodo \verb|valid?|, che controlla che l'array di errori sia vuoto, altrimenti è possibile accedervi e mostrare gli errori, anche come risposta della API. Le validazioni fornite da Active Record permettono di verificare vari aspetti degli attributi, come la presenza di un valore (\verb|NOT NULL|), il formato di una stinga o i controlli sui valori numerici e molti altri.
 
 Aggiungendo le validazioni sugli attributi, il file di esempio degli organizzatori diventa:
-\begin{minted}{ruby}
+
+\begin{code}{Classe \texttt{Organizer} con le validazioni}
 # app/models/organizer.rb
 
 class Organizer < ApplicationRecord
@@ -163,11 +175,11 @@ private
     errors.add :creator, :cannot_change if creator_changed? && persisted?
   end
 end
-\end{minted}
+\end{code}
 
 \subsection{Associazione a \texttt{creator}}
 Quasi tutti i modelli implementati nel corso del progetto hanno un'associazione con il modello degli utenti, che traccia l'utente che ha creato il record. Sono necessarie diverse righe di codice per implementare questa funzionalità, non sempre intuitive oltretutto, quindi ho deciso di incapsculare questa configurazione all'interno di un concern, una funzionalità offerta da Active Support, che sfrutta i moduli di Ruby. Dopo l'operazione di refactor il file del modello di esempio diventa:
-\begin{minted}{ruby}
+\begin{code}{Classe \texttt{Organizer} che utilizza il concern per il \texttt{creator}}
 # app/models/organizer.rb
 
 class Organizer < ApplicationRecord
@@ -186,7 +198,7 @@ class Organizer < ApplicationRecord
 
 	validates :vat, uniqueness: true
 end
-\end{minted}
+\end{code}
 
 \section{Controller}
 I controller sono le classi che si occupano di rispondere alle chiamate effettuate agli endpoint esposti dalla API. I metodi che gestiscono queste richieste sono chiamati ``action'' in Rails. Di seguito viene descritta l'implementazione delle action realizzate nei controller.
@@ -239,12 +251,13 @@ Per implementare le condizioni definite sui parametri permessi in \S \ref{api:pa
 \section{Test di unità} \label{code:spec}
 Durante la codifica dei modelli sono stati definiti alcuni test di unità, prevalentemente sulle validazioni dei dati. Non sono stati testati tutti i modelli e, in particolare nessun controller, perché non era un'attività richiesta esplicitamente dal committente, quindi mi è stato chiesto dal \emph{project manager} di investirci una quantità limitata di tempo. I test definiti sono stati implementati utilizzando la gemma RSpec, che fornisce strumenti per il \emph{behaviour-driven development} (BDD), come da prassi aziendale di Moku. La pratica del BDD riprende molti concetti del \emph{test-driven development}, prestando particolare attenzione alla leggibilità dei test e alla loro intuitività. RSpec, in particolare, utilizza diverse \emph{keyword} che puntano a rendere il codice quanto più possibile simile al linguaggio naturale, gli stessi nomi dei test sono spesso delle vere e proprie frasi.
 Un esempio di un test implementato è:
-\begin{minted}{ruby}
+
+\begin{code}{Esempio di un test implementato con RSpec}
 it 'is not valid without a role' do
   subject.role = nil
   expect(subject).not_to be_valid
 end
-\end{minted}
+\end{code}
 
 \noindent Sono stati implementati test solamente per i seguenti modelli, per un totale di 36 test:
 \begin{itemize}
