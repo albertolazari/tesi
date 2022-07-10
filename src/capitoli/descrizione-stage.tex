@@ -1,11 +1,113 @@
 \section{Introduzione al progetto}
-\intro{Storia del progetto prima del mio arrivo, azienda che ha commissionato il progetto, descrizione dello scopo della piattaforma e del suo funzionamento, motivazioni alla base della scelta di riscrittura del backend.}
+Infinite Area, una piattaforma dell'innovazione, ha ideato e sviluppato un'applicazione web per l'organizzazione e la gestione di eventi e conferenze dal vivo, online e ibride, denominata Evvvents.\ L'applicazione si propone come un \emph{software as a service}, configurabile nell'aspetto e nelle funzionalità, in base alle preferenze dell'utente. In questo modo ogni utente che possiede un piano di iscrizione all'applicazione, un \emph{tenant}, gestisce la sua versione del software, rendendo Evvvents nel suo complesso un \emph{software multi tenant}. I \emph{tenant} si identificano all'interno dell'applicazione come ``piattaforme''; ogni piattaforma gestisce più aziende, dette ``organizzatori'', perché dirette responsabili della creazione e organizzazione degli eventi, il fulcro del software. Sono presenti diverse funzionalità relative agli eventi:
+\paragraph{Sistemi di videoconferenze} Per ogni evento è possibile specificare l'integrazione con diversi sistemi di videoconferenze, tra cui:
+\begin{itemize}
+	\item Zoom meeting e webinar
+	\item Microsoft Teams
+	\item GoToWebinar
+	\item Webex
+	\item Sistemi esterni di videoconferenze
+\end{itemize}
+\paragraph{Sistema di checkin} Nelle pagine degli eventi vengono riportati i checkin effettuati in presenza e in remoto, per tenere traccia del numero di utenti partecipanti.
+\paragraph{Comunicazione tra utenti} È presente un sistema di messaggistica tra i partecipanti, online e in presenza. I partecipanti possono anche avere delle conversazioni con i relatori dell'evento.
+\paragraph{Notifiche} Ogni piattaforma può decidere di richiedere l'integrazione con il sistema di notifiche push e SMS per gli eventi. Le notifiche possono essere anche inviate via mail ai partecipanti e possono essere automatiche o programmate.
+\paragraph{Sistema di crediti} Le piattaforme possono anche decidere di utilizzare l'integrazione con il sistema dei crediti, in cui ogni evento permette agli utenti di guadagnare un numero specificato di crediti, in base alla durata della partecipazione all'evento.
 
-\section{Requisiti} \label{stage:requisiti}
-\intro{Requisiti obbligatori, desiderabili e opzionali previsti.}
+\paragraph{}
+Dopo aver realizzato una prima versione prototipale di Evvvents, Infinite Area si è rivolta a Moku, chiedendo di apportare modifiche e miglioramenti all'applicazione. A seguito di un'attività di analisi effettuata da Moku, è risultato che il frontend sarebbe stato mantenuto e fatto evolvere, mentre il backend presentava grossi limiti, funzionali e strutturali. Mantenerlo e modificarlo per raggiungere uno standard di qualità adeguato sarebbe costato più tempo e risorse di una riscrittura completa, quindi è stata presa la decisione di svilupparlo da zero con le tecnologie utilizzate da Moku per prassi aziendale, per quanto possibile, puntando a ricreare una API quanto più simile a quella esistente, per limitare le modifiche necessarie sul frontend.
+
+Lo scopo del progetto di stage è stata la realizzazione della nuova versione del backend, partendo da un'attività di analisi dettagliata della versione originale, passando per la progettazione della nuova versione.
+
+
+\section{Requisiti}
+I requisiti dello stage riportati nel piano di lavoro sono i seguenti, categorizzati per importanza:
+
+\paragraph{Obbligatori} Requisiti primari, necessari per una buona riuscita dello stage:
+\begin{itemize}
+	\item gestione e pianificazione del progetto attraverso kanban board condivisa;
+	\item analisi dei flussi attuali e delle API richieste;
+	\item progettazione ed implementazione dei modelli e dei controller, a partire dai requisiti raccolti;
+	\item analisi ed integrazione Zoom, GoToWebinar, Webex.
+\end{itemize}
+
+\paragraph{Desiderabili} Non necessari, ma che contribuiscono alla completezza del prodotto, se rispettati:
+\begin{itemize}
+	\item coordinamento con il cliente finale;
+	\item integrazione team;
+	\item integrazione stampante biglietti;
+	\item suite di testing del software prodotto;
+	\item documentazione completa.
+\end{itemize}
+
+\paragraph{Opzionali} Che portano del valore aggiunto al progetto:
+\begin{itemize}
+	\item ulteriori modifiche all'applicazione che esulano da quando riportato nel piano di lavoro.
+\end{itemize}
+
+\noindent Il conseguimento dei requisiti è stato in parte dipendente dalle decisioni di gestione del progetto da parte del \emph{project manager} e dalle richieste o dalla disponibilità del committente. In particolare è stato chiesto di dedicare una quantità limitata di tempo al testing, perché non richiesto esplicitamente e non è stato possibile implementare le integrazioni, a causa di ritardi nelle risposte del committente, necessarie per definire alcuni aspetti.
+
 
 \section{Pianificazione}
-\intro{Divisione settimanale del lavoro dal piano di lavoro, incluse correzioni.}
+Il periodo di svolgimento dello stage era previsto tra il 26 aprile 2022 e il 1 luglio 2022, per una durata complessiva di 300 ore. Il periodo preventivato considera due settimane aggiuntive a quelle necessarie a raggiungere 300 ore, utili a coprire eventuali imprevisti. La tabella che segue mostra la pianificazione delle attività da svolgere per ogni settimana, considerando 8 ore di lavoro al giorno:
+
+\begin{table}[h]
+	\centering
+	\rowcolors{2}{gray!25}{white}
+	\label{tab:pianificazione}
+	\begin{tabularx}{0.65 \textwidth}{c|X}
+		\rowcolor{white}
+		\textbf{Settimana} & \textbf{Attività} \\
+		\hline
+		\makecell{\textbf{1} \\ 27/04 - 29/04} & \makecell[l]{Comprensione sistema e obiettivi \\ Analisi dei requisiti} \\
+		\makecell{\textbf{2} \\ 02/05 - 06/05} & Progettazione \\
+		\makecell{\textbf{3} \\ 09/05 - 13/05} & \makecell[l]{Progettazione \\ Studio e setup ambiente di sviluppo} \\
+		\makecell{\textbf{4} \\ 16/05 - 20/05} & Implementazione \\
+		\makecell{\textbf{5} \\ 23/05 - 27/05} & Implementazione \\
+		\makecell{\textbf{6} \\ 30/05 - 03/06} & Implementazione \\
+		\makecell{\textbf{7} \\ 06/06 - 10/06} & \makecell[l]{Implementazione \\ Test e validazione} \\
+		\makecell{\textbf{8} \\ 13/06 - 17/06} & \makecell[l]{Test e validazione \\ Documentazione}
+	\end{tabularx}
+	\vspace{5pt}
+	\caption{Tabella della pianificazione del lavoro}
+\end{table}
+
 
 \section{Tecnologie utilizzate}
-\intro{Descrizione della configurazione del framework Ruby on Rails utilizzata: librerie utilizzate, Postgres, AWS, API REST .}
+Essendo il progetto un lavoro di riscrittura completa, è stato deciso di sfruttare quasi tutte le tecnologie comunemente utilizzate per convenzione aziendale nello sviluppo di backend:
+
+\subsection{Ruby}
+Ruby \footcite{site:ruby} è un linguaggio di \emph{scripting} interpretato, a oggetti e dinamicamente tipizzato, che punta alla produttività, mantenendo una sintassi semplice ed elegante e una bassa curva di apprendimento. La sintassi prevede un uso limitato della punteggiatura e di elementi considerati superflui, preferendo uno stile spesso naturale e intuitivo, che migliora la leggibilità del codice:
+\begin{code}{Esempio della sintassi di Ruby}
+	user.updated_at = 1.hour.ago
+\end{code}
+
+\noindent In Ruby ogni \emph{statement} è un'espressione, che ritorna un risultato, infatti ogni blocco di codice ritorna il risultato dell'ultima istruzione. Nell'esempio seguente la funzione \verb|get_image_from| ritorna l'immagine dall'array \verb|attribute|, se presente; altrimenti ritorna \verb|nil|, perché l'espressione non ha ritornato un risultato:
+\begin{code}{Esempio di una funzione in Ruby}
+	def get_image_from attribute do
+		attribute[:image] if attribute.has_key? :image
+	end
+
+	user.image = get_image_from uploaded_files
+\end{code}
+
+\noindent Il linguaggio è multi-paradigma, ma fortemente orientato agli oggetti: perfino i tipi primiti e i metodi vengono trattati come oggetti. Aggiungendo la possibilità di estendere ogni classe con nuovi metodi, anche successivamente alla sua dichiarazione, si ottiene un linguaggio estremamente flessibile ed estendibile, che consente di adattare il comportamento del linguaggio stesso alle proprie necessità.
+
+Da queste premesse si intuisce come Ruby sia predisposto per essere facilmente estensibile, infatti è presente un RubyGems, il \emph{package manager} per gestire la distribuzione delle \emph{gemme}, pacchetti che possono includere varie funzionalità per estendere il linguaggio, tra cui librerie o eseguibili. La configurazione delle gemme necessarie per un progetto, con le loro dipendenze e versioni, viene eseguita da Bundler, che si occupa di mantenere tutte queste informazioni nei \emph{Gemfile}. Di seguito sono elencate le principali gemme utilizzate nel progetto di stage.
+\paragraph{Rails} Framework utilizzato, illustrato successivamente in dettaglio.
+\paragraph{Devise} Fornisce molti metodi e endpoint già configurati per l'autenticazione sicura degli utenti, insieme alla gemma DeviseTokenAuth, che fornisce l'autenticazione tramite token.
+\paragraph{Pundit} Permette di separare la gestione dei permessi degli utenti dai controller, riducendo anche il codice ripetuto per l'autorizzazione.
+
+\subsection{Rails}
+Alcune gemme di RubyGems sono molto complete, tanto da includere all'interno un intero framework. L'esempio principale è la gemma Rails, che fornisce il framework \emph{Ruby on Rails} \footcite{site:rails}, o \emph{Rails}. Si basa sul paradigma \emph{convention over configuration}, quindi cerca di ridurre al minimo le decisioni che lo sviluppatore deve prendere, al fine di ridurre il codice \emph{boilerplate} e favorire il rispetto del principio \emph{don't repeat yourself} (DRY).
+
+Rails fornisce tutti gli strumenti per sviluppare un'applicazione web basata sul pattern Model-View-Controller (MVC), in particolare le librerie:
+\paragraph{Active Record} Implementa l'omonimo pattern architetturale, in cui si utilizza un database relazionale per memorizzare le informazioni relative ai modelli. Fornisce un'interfaccia per astrarre svariati \emph{database management system} (DBMS), in particolare una contenuta nella gemma PG, che permette di utilizzare un database basato su PostgreSQL, comunemente utilizzato nei progetti di Moku.
+\paragraph{Action Controller} Fornisce metodi e classi per la definizione dei controller REST dell'applicazione.
+\paragraph{Action View} Fornisce metodi e classi per la definizione della parte di view dell'applicazione. Nei progetti di Moku non viene generalmente utilizzata, perché si utilizza Rails per sviluppare API backend, che comunicano con view separate. Nel caso del progetto di stage il frontend è sviluppato con Angular.
+\paragraph{Active Storage} Permette di memorizzare file, come immagini o documenti, su servizi cloud, invece che sul server o nel database. Sono disponibili diversi servizi, Moku utilizza AWS S3.
+\paragraph{Active Admin} Permette di creare velocemente e con semplicità interfacce per la gestione dei dati nel database. Non è stato usato nel progetto di stage, perché il frontend era già progettato per fornire le stesse funzionalità agli utenti super admin.
+
+\subsection{API REST}
+REST è uno stile architetturale per la progettazione di API \emph{stateless}. Si basa su chiamate a degli \emph{endpoint} (\emph{routes} in Rails), coppie formate da un URL, che identifica univocamente una risorsa, e un metodo HTTP, normalmente uno tra GET, POST, PUT, PATCH o DELETE. Viene ampiamente utilizzato nello sviluppo di API ed è supportato nativamente da molti framework.
+
+Essendo uno stile architetturale, REST non è una vera e propria tecnologia, ma in questo caso si contrappone a GraphQL, un linguaggio di query per API, che viene normalmente utilizzato nei progetti di Moku. Per il progetto di stage si è optato per sviluppare una API REST per limitare le modifiche necessarie da fare sul frontend, essendo che questo era già pronto e si basava sulla API precedente, sviluppata secondo lo stile REST. Sarebbe stato troppo costoso modificarne il funzionamento perché potesse funzionare con GraphQL.

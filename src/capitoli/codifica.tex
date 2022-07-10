@@ -1,22 +1,268 @@
 \section{Modelli}
+La codifica dei modelli passa per tre fasi successive:
+\begin{enumerate}
+	\item creazione della entità del modello nel database e della classe, utilizzando le migrazioni;
+	\item l'associazione del modello con altri modelli o elementi di \emph{storage};
+	\item le validazioni sugli attributi e sulle associazioni dichiarate.
+\end{enumerate}
+
 \subsection{Migrazioni del database}
-\intro{Comando} \texttt{rails generate} \intro{e migrazione prodotta.}
+Basandosi su quanto definito nella fase di progettazione dei modelli, descritta nel capitolo \ref{cap:modelli}, questi sono stati generati utilizzando da linea di comando il generatore automatico \verb|rails generate model| o, in versione ridotta, \verb|rails g model|. Il comando accetta come argomenti:
+\begin{itemize}
+	\item il nome del modello, al singolare e in \emph{CamelCase};
+	\item gli attributi che deve avere il modello;
+	\item per ogni attributo: il suo tipo, che rispecchia, ad alto livello, i tipi comunemente disponibili per le colonne nei DBMS SQL. Normalmente è uno dei seguenti tipi nativi delle migrazioni di Rails \footcite{site:migration-types}, agnostici rispetto all'implementazione del database:
+	\begin{itemize}
+		\item \verb|primary_key|,
+		\item \verb|string|,
+		\item \verb|text|,
+		\item \verb|integer|,
+		\item \verb|bigint|,
+		\item \verb|float|,
+		\item \verb|decimal|,
+		\item \verb|datetime|,
+		\item \verb|timestamp|,
+		\item \verb|time|,
+		\item \verb|date|,
+		\item \verb|binary|,
+		\item \verb|blob|,
+		\item \verb|boolean|,
+		\item \verb|references|
+	\end{itemize}
+	\item per ogni attributo: l'identificatore \verb|uniq|, che imposta un indice su quella colonna del database, che ne specifica l'unicità nell'entità.
+\end{itemize}
+Di conseguenza, la sintassi generale è la seguente:
 
-\subsection{Associazioni a modelli e file}
-\intro{Associazioni di Active Record e Active Storage.}
+\begin{code}[shell]{Comando \texttt{rails generate model}}
+rails g model ModelName attr_1:type:[uniq] attr_2:type:[uniq] ...
+\end{code}
 
-\subsection{Validazioni}
-\intro{Validazioni sugli attributi del modello e le associazioni.}
+\noindent Portando un esempio, per la generazione di una versione semplificata del modello degli organizzatori può essere usato il comando seguente:
+
+\begin{code}[shell]{Esempio di utilizzo del comando \texttt{rails generate model}}
+rails g model Organizer name:string vat:string:uniq address:string platform:references creator_id:bigint
+\end{code}
+
+\noindent che genera la seguente migrazione:
+
+\begin{code}{Migrazione generata dal comando \texttt{rails generate model}}
+# db/migrate/{timestamp}_create_organizers.rb
+
+class CreateOrganizers < ActiveRecord::Migration[7.0]
+	def change
+	create_table :organizers do |t|
+		t.string :name
+		t.string :vat
+		t.string :address
+		t.references :platform, foreign_key: true
+		t.bigint :creator_id
+
+		t.timestamps
+	end
+	add_index :organizers, :vat, unique: true
+	end
+end
+\end{code}
+
+\noindent Successivamente questa viene modificata, aggiungendo i vincoli \verb|NOT NULL| e la chiave esterna verso l'utente creatore prima di eseguire effettivamente la migrazione.
+
+Si noti come non sia necessario specificare la chiave primaria. Il comportamento di \emph{default} di Active Record è introdurre automaticamente un identificativo progressivo, chiamato \verb|id|, di tipo \verb|bigint|. Inoltre \verb|timestamps| genera automaticamente degli attributi gestiti dalla gemma, per tracciare l'istante di creazione e ultima modifica dei record.
+
+La migrazione dopo la modifica è la seguente:
+\begin{code}{Migrazione modificata manualmente}
+# db/migrate/{timestamp}_create_organizers.rb
+
+class CreateOrganizers < ActiveRecord::Migration[7.0]
+  def change
+    create_table :organizers do |t|
+      t.string :name, null: false
+      t.string :vat, null: false
+      t.string :address, null: false
+      t.references :platform, null: false, foreign_key: true
+      t.bigint :creator_id, null: false
+
+      t.timestamps
+    end
+    add_foreign_key :organizers, :users, column: :creator_id
+    add_index :organizers, :vat, unique: true
+  end
+end
+\end{code}
+
+\noindent Utilizzando il metodo \verb|change|, le migrazioni possono modificare la struttura del database secondo quando specificato nella migrazione, senza necessità di ricorrere a \emph{downtime} del server e di eseguire il rollback alla versione dello schema del database precedente, se fosse necessario.
+
+Il generatore produce altri due file, oltre alla migrazione:
+
+\begin{code}{File del modello generato dal comando \texttt{rails generate model}}
+# app/models/organizer.rb
+
+class Organizer < ActiveRecord::Base
+  belongs_to :platform
+end
+\end{code}
+
+\begin{code}{File di spec generato dal comando \texttt{rails generate model}}
+# spec/models/organizer_spec.rb
+
+require 'rails_helper'
+
+RSpec.describe Organizer, type: :model do
+  pending "add some examples to (or delete) #{__FILE__}"
+end
+\end{code}
+
+\noindent Il primo contiene la definizione della classe, in cui andranno inseriti i metodi, le validazioni e le associazioni sul modello, descritte in \S \ref{code:association} e \S \ref{code:validates}. Nel secondo andranno definiti i test di unità per il modello, descritti in \S \ref{code:spec}.
+
+\subsection{Associazioni a modelli e file} \label{code:association}
+Una volta generata la struttura del modello attraverso le migrazioni del database, è stato necessario associare tra loro i modelli, al livello dell'applicazione, secondo le relazioni espresse nel diagramma ER prodotto durante la fase di analisi e refactor (\S \ref{cap:modelli}). Per farlo, sono stati utilizzati i metodi forniti da \verb|ActiveRecord::Base|, classe ereditata da tutti i modelli. Nel progetto, in realtà, tutti i modelli ereditano dalla classe \verb|ApplicationRecord|, che a sua volta eredita da \verb|ActiveRecord::Base|, ma viene utilizzato per aggiunge metodi di utilità comuni a tutti i modelli implementati.
+
+Rails incentiva l'implementazione di associazioni bidirezionali, attraverso l'utilizzo dei metodi:
+\begin{itemize}
+	\item \verb|belongs_to|: utilizzato per specificare l'associazione con il modello di cui la classe memorizza la chiave esterna;
+	\item \verb|has_one|: specifica l'associazione con un record di un modello che memorizza la chiave esterna alla classe;
+	\item \verb|has_many|: specifica l'associazione con più record di un modello che memorizza la chiave esterna alla classe;
+	\item \verb|has_and_belongs_to_many|: permette di specificare associazioni del tipo ``molti a molti'', utilizzando una tabella, creata manualmente, che possiede le chiavi esterne ad entrambi i modelli coinvolti.
+\end{itemize}
+Oltre alle associazioni con i modelli sono state specificate le associazioni con i file. Queste vengono gestite con la gemma Active Storage, che fornisce i metodi per eseguire l'associazione (\emph{attach}) dei file, chiamati \emph{attachments}: \verb|has_one_attached| e \verb|has_many_attached|.
+
+Proseguendo con l'esempio dell'implementazione degli organizzatori, il file della classe \verb|Organizer| con le associazioni dichiarate risulta essere il seguente:
+
+\begin{code}{Classe \texttt{Organizer} con le associazioni}
+# app/models/organizer.rb
+
+class Organizer < ApplicationRecord
+  belongs_to :platform
+  belongs_to :creator, class_name: 'User', inverse_of: :created_organizers, optional: true
+
+  has_many :locations, dependent: :nullify
+
+  has_one_attached :logo
+end
+\end{code}
+
+\noindent L'associazione \verb|has_many| è l'altra estremità di un'associazione \verb|belongs_to| dichiarata nel modello \verb|Location| e si basa sulla convenzione dei nomi di Rails per cui \verb|Location| deve avere una colonna nel database chiamata \verb|organizer_id|, che punta all'identificativo di un organizzatore. Serve per rendere accessibili le \emph{location} gestite dall'organizzatore, avendo il record dell'organizzatore stesso.
+
+\subsection{Validazioni} \label{code:validates}
+L'ultima fase di sviluppo della parte di modello sono le validazioni sugli attributi e le associazioni, che vengono codificate utilizzando principalmente i validatori forniti da Active Record, da altre gemme o creati manualmente. Le validazioni inseriscono dei messaggi di errore in un array associato al modello che si sta validando; prima di memorizzare nel database i dati del record che si vuole salvare, ad esempio chiamando i metodi \verb|save| o \verb|create|, viene chiamato il metodo \verb|valid?|, che controlla che l'array di errori sia vuoto, altrimenti è possibile accedervi e mostrare gli errori, anche come risposta della API. Le validazioni fornite da Active Record permettono di verificare vari aspetti degli attributi, come la presenza di un valore (\verb|NOT NULL|), il formato di una stinga o i controlli sui valori numerici e molti altri.
+
+Aggiungendo le validazioni sugli attributi, il file di esempio degli organizzatori diventa:
+
+\begin{code}{Classe \texttt{Organizer} con le validazioni}
+# app/models/organizer.rb
+
+class Organizer < ApplicationRecord
+  belongs_to :platform
+  belongs_to :creator, class_name: 'User', inverse_of: :created_organizers, optional: true
+
+  has_many :locations, dependent: :nullify
+
+  has_one_attached :logo
+  validates :logo, attached: true, content_type: ['image/png', 'image/jpeg']
+
+  validates :name,
+            :vat,
+            :address,
+            presence: true
+
+  validates :vat, uniqueness: true
+
+  validates :creator, presence: true, on: :create
+  validate :creator_not_changed
+
+private
+
+  def creator_not_changed
+    errors.add :creator, :cannot_change if creator_changed? && persisted?
+  end
+end
+\end{code}
+
+\subsection{Associazione a \texttt{creator}}
+Quasi tutti i modelli implementati nel corso del progetto hanno un'associazione con il modello degli utenti, che traccia l'utente che ha creato il record. Sono necessarie diverse righe di codice per implementare questa funzionalità, non sempre intuitive oltretutto, quindi ho deciso di incapsculare questa configurazione all'interno di un concern, una funzionalità offerta da Active Support, che sfrutta i moduli di Ruby. Dopo l'operazione di refactor il file del modello di esempio diventa:
+\begin{code}{Classe \texttt{Organizer} che utilizza il concern per il \texttt{creator}}
+# app/models/organizer.rb
+
+class Organizer < ApplicationRecord
+	include Creator
+	belongs_to :platform
+
+	has_many :locations, dependent: :nullify
+
+	has_one_attached :logo
+	validates :logo, attached: true, content_type: ['image/png', 'image/jpeg']
+
+	validates :name,
+			:vat,
+			:address,
+			presence: true
+
+	validates :vat, uniqueness: true
+end
+\end{code}
 
 \section{Controller}
-\subsection{APIController}
-\intro{Descrizione dei metodi di utilità ereditati dai controller dell'API.}
+I controller sono le classi che si occupano di rispondere alle chiamate effettuate agli endpoint esposti dalla API. I metodi che gestiscono queste richieste sono chiamati ``action'' in Rails. Di seguito viene descritta l'implementazione delle action realizzate nei controller.
 
 \subsection{Implementazione delle action}
-\intro{Descrizione ed esempio di action tipiche dei controller.}
+\subsubsection{Index}
+Implementa gli endpoint descritti in \S \ref{api:lista} e \S \ref{api:lista-risorsa}. Verifica che l'utente sia autorizzato ad eseguire questa azione ed effettua il rendering paginato della lista dei record richiesti, dopo che questa è stata filtrata in base ai permessi dell'utente che ha effettuato la richiesta. Serializza i record mostrati, utilizzando un serializzatore conforme a quanto deciso durante la fase di progettazione e descritto in \S \ref{api:lista}.
+
+\subsubsection{Show}
+Implementa l'endpoint descritto in \S \ref{api:dettaglio}. Cerca e carica il record con l'identificativo richiesto dal database. Se questo è presente, verifica che l'utente sia autorizzato a visualizzarlo e lo restituisce, serializzato in modo conforme a quanto dichiarato nella descrizione dell'endpoint.
+
+\subsubsection{Create}
+Implementa gli endpoint descritti in \S \ref{api:creazione} e \S \ref{api:creazione-risorsa}. Controlla che tutti i parametri passati nel corpo della richiesta siano permessi e procede con la creazione del nuovo record. Prima di salvarlo nel database si assicura che l'utente sia autorizzato a creare quel record. Se la creazione avviene all'interno di un altro record, questo viene associato con quello appena creato. Infine associa i file al record, se richiesto e previsto, e lo restituisce serializzato come descritto in \S \ref{api:dettaglio}.
+
+\subsubsection{Update}
+Implementa l'endpoint descritto in \S \ref{api:modifica}. Cerca e carica il record con l'identificativo richiesto dal database. Se questo è presente, verifica che l'utente sia autorizzato a modificarlo. Controlla che tutti i parametri passati nel corpo della richiesta siano permessi e procede con la modifica degli attributi del record, corrispondenti ai parametri passati. Associa i file al record, se richiesto e previsto, infine lo restituisce serializzato come descritto in \S \ref{api:dettaglio}.
+
+\subsubsection{Destroy}
+Implementa l'endpoint descritto in \S \ref{api:eliminazione}. Cerca e carica il record con l'identificativo richiesto dal database. Se questo è presente, verifica che l'utente sia autorizzato a eliminarlo. Procede con l'eliminazione fisica o logica, dove previsto, e infine lo restituisce serializzato come descritto in \S \ref{api:dettaglio}.
+
+\subsection{APIController}
+\verb|APIController| è la classe base da cui eredita ogni controller della API implementato. Include del codice per gestire automaticamente le eccezioni che possono essere sollevate dal backend e il relativo \emph{rendering} dell'errore. A quelli già presenti ho deciso di aggiungere la gestione delle eccezioni:
+\begin{itemize}
+	\item \verb|Pundit::NotAuthorizedError|: sollevata in caso di autorizzazione fallita. Restituisce il codice HTTP \verb|403|;
+	\item \verb|ActionController::UnpermittedParameters|: sollevata nel caso in cui sia presente un parametro non consentito nel corpo di una richiesta. Restituisce il codice HTTP \verb|400|.
+\end{itemize}
+Inoltre, ho deciso di rifattorizzare due operazioni che si ripetevano in quasi tutti i controller:
+
+\paragraph{\emph{Attach} dei file} I metodi \verb|create| e \verb|update| accettano un hash (simile a un array associativo di altri linguaggi), quindi è sufficiente passare ai metodi i parametri presenti nel corpo della richiesta, per assegnare il valore dei normali attributi di un record. Gli \emph{attachment} non vengono considerati normali attributi, quindi devono essere associati uno alla volta al record. Questo porta a una grande quantità di codice \emph{boilerplate}, quindi ho creato il metodo \mintinline{ruby}{attach_files_to record, from_attributes_in: :attachments}, che associa ogni file contenuto nel parametro della richiesta, specificato con \verb|from_| \verb|attributes_in|, al record \verb|record|.
+
+\paragraph{\emph{Rendering} della paginazione} Nelle risposte paginate è necessario ritornare, oltre alla lista dei record, anche le informazioni relative al numero totale di pagine e di record disponibili. Tutto questo viene gestito dal metodo \mintinline{ruby}{render_pagination collection_hash,} \mintinline{ruby}{each_serializer:}, a cui bisogna passare un hash contenete la lista dei record e un serializzatore, che agisce su ogni record.
+
 
 \section{Gestione dei permessi}
-\intro{Funzionamento e uso della gemma ``Pundit'' per la gestione dei permessi relativi agli endpoint dell'API, scope e metodi relativi alle action, esempio di gestione della gerarchia che andrà rivisto}
+\subsection{Policy}
+Per l'implementazione della gestione dei permessi, è stata utilizzata la gemma Pundit. Utilizza delle policy, dei \emph{plain old ruby object} (PORO), chiamati \verb|ModelPolicy|, per definire le condizioni per cui l'utente è autorizzato a eseguire una specifica azione sul record del modello \verb|Model| interessato. I PORO sono classi che non hanno alcuna dipendenza dal framework o da librerie esterne.
 
-\section{Test di unità}
-\intro{Descrizione della gemma ``RSpec'', che fornisce strumenti per lo sviluppo guidato dal comportamento (behaviour-driven development), esempi di modelli testati.}
+\subsection{Action}
+Per autorizzare una specifica action viene utilizzato un metodo con lo stesso nome, seguito dal punto di domanda, che nelle convenzioni di Ruby indica i metodi che ritornano un valore booleano. Questo metodo viene chiamato nel momento in cui, nella action di un controller, viene chiamato il metodo \verb|authorize record|, dove \verb|record| è il record interessato dalla action.
+
+Ad esempio, se il metodo \verb|update?| della policy \verb|PlatformPolicy| ritorna \verb|true|, allora l'utente che intende modificare il record interessato dalla action è autorizzato a farlo. L'implementazione dei metodi delle policy rispetta quanto deciso nella fase di progettazione, descritta in \S \ref{api:permessi-richiesti}.
+
+\subsection{Scope}
+Le action \verb|index| richiedono che la lista dei record da ritornare venga filtrata, restituendo solamente i record che l'utente ha il permesso di visualizzare. Questo è stato implementato nel metodo \verb|resolve| della classe \verb|Scope|, definita all'interno di ogni policy. Chiamando il metodo \verb|policy_scope| nella action di un controller, passandogli la lista di record da filtrare, si ottiene la lista filtrata.
+
+\subsection{Parametri permessi}
+Per implementare le condizioni definite sui parametri permessi in \S \ref{api:parametri-permessi}, si definisce il metodo \verb|permitted_attributes| all'interno della policy, che deve restituire sempre un array di simboli, rappresentanti i parametri permessi. Questo metodo, chiamato nella action di un controller, restituisce i parametri presenti nel corpo della richiesta, se sono tutti permessi, altrimenti solleva un'eccezione.
+
+
+\section{Test di unità} \label{code:spec}
+Durante la codifica dei modelli sono stati definiti alcuni test di unità, prevalentemente sulle validazioni dei dati. Non sono stati testati tutti i modelli e, in particolare nessun controller, perché non era un'attività richiesta esplicitamente dal committente, quindi mi è stato chiesto dal \emph{project manager} di investirci una quantità limitata di tempo. I test definiti sono stati implementati utilizzando la gemma RSpec, che fornisce strumenti per il \emph{behaviour-driven development} (BDD), come da prassi aziendale di Moku. La pratica del BDD riprende molti concetti del \emph{test-driven development}, prestando particolare attenzione alla leggibilità dei test e alla loro intuitività. RSpec, in particolare, utilizza diverse \emph{keyword} che puntano a rendere il codice quanto più possibile simile al linguaggio naturale, gli stessi nomi dei test sono spesso delle vere e proprie frasi.
+Un esempio di un test implementato è:
+
+\begin{code}{Esempio di un test implementato con RSpec}
+it 'is not valid without a role' do
+  subject.role = nil
+  expect(subject).not_to be_valid
+end
+\end{code}
+
+\noindent Sono stati implementati test solamente per i seguenti modelli, per un totale di 36 test:
+\begin{itemize}
+	\item User;
+	\item Platform;
+	\item Organizer.
+\end{itemize}
+In particolare, i test scritti per il modello degli utenti sono i più esaustivi, perché sono quelli su cui è stato dedicato più tempo e comprendono test sulle validazioni, su alcuni aspetti dell'autenticazione e sull'associazione con l'utente \verb|creator|.
