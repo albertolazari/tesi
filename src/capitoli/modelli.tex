@@ -20,8 +20,8 @@ La prima tabella analizzata è stata quella degli utenti. Nella versione precede
 	\end{itemize}
 	\item \verb|e_users_levels|: memorizzava i ruoli degli utenti e, per ogni azione esposta dall'API, un campo booleano che indicava se quel ruolo avesse l'autorizzazione di effettuare quell'azione.
 \end{itemize}
-Ho deciso di raccogliere queste informazioni in un unico modello, con i campi dell'entità \verb|e_partecipants|, a cui ho aggiunto l'immagine dell'utente, un enumerazione che ne indica il ruolo, invece di utilizzare un'intera entità come era stato fatto precedentemente. I campi necessari per l'autenticazione sono stati omessi, perché già presenti nel \emph{template} dei progetti di Moku.
+Ho deciso di raccogliere queste informazioni in un unico modello, con i campi dell'entità \verb|e_partecipants|, a cui ho aggiunto l'immagine dell'utente e un enumerazione che ne indica il ruolo, invece di utilizzare un'intera entità come era stato fatto precedentemente. I campi necessari per l'autenticazione sono stati omessi, perché già presenti nel \emph{template} dei progetti di Moku, che è stato usato come base di partenza anche per questo.
 
-La motivazione alla base della scelta di non codificare l'autorizzazione in un modello è stata la complessità di questo processo, che spesso dipende anche dall'oggetto su cui si vuole eseguire un'azione, qundi non esclusivamente dal ruolo dell'utente.
+La motivazione alla base della scelta di non codificare le autorizzazioni all'interno di un modello è stata la complessità del processo di autorizzazione nel dominio trattato, che spesso dipende anche dall'oggetto su cui si vuole eseguire un'azione, qundi non esclusivamente dal ruolo dell'utente.
 
 La scelta di unire i partecipanti (corretti in ``participants'', invece di ``partecipants'') al resto degli utenti è stata presa per ridurre la duplicazione dei dati, in questo caso rilevante, perché le due entità, una volta riviste, avrebbero avuto quasi tutti i campi in comune. Inoltre, seppur vero che i partecipanti non possono effettuare l'autenticazione nell'applicazione web, utilizzano l'applicazione \emph{mobile}, che utilizzerà lo stesso backend.
