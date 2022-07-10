@@ -1,5 +1,45 @@
 \section{Raggiungimento dei requisiti}
-\intro{Tabella con stato di completamento dei requisiti, con commento (dove necessario)}
+La tabella seguente riporta lo stato di completamento e soddisfazione dei requisiti, definiti in \S \ref{stage:requisiti}.
+\begin{table}[h]
+	\centering
+	\rowcolors{2}{gray!25}{white}
+	\label{tab:raggiungimento-obiettivi}
+	\begin{tabularx}{\textwidth}{X|c|c}
+		\rowcolor{white}
+		\textbf{Requisito} & \textbf{Importanza} & \textbf{Stato} \\
+		\hline
+		\makecell[l]{Gestione e pianificazione del progetto \\ attraverso kanban board condivisa} & Obbligatorio & Rispettato \\
+		\makecell[l]{Analisi dei flussi attuali e delle API \\ richieste} & Obbligatorio & Rispettato \\
+		\makecell[l]{Progettazione ed implementazione dei \\ modelli e dei controller, a partire dai \\ requisiti raccolti} & Obbligatorio & Rispettato \\
+		\makecell[l]{Analisi ed integrazione Zoom, \\ GoToWebinar, Webex} & Obbligatorio & Non rispettato \\
+		\makecell[l]{\vspace{-6pt} \\ Coordinamento con il cliente finale \\ \vspace{-6pt}} & Desiderabile & Rispettato \\
+		\makecell[l]{\vspace{-6pt} \\ Integrazione team \\ \vspace{-6pt}} & Desiderabile & Rispettato \\
+		\makecell[l]{\vspace{-6pt} \\ Integrazione stampante biglietti \\ \vspace{-6pt}} & Desiderabile & Non rispettato \\
+		Suite di testing del software prodotto & Desiderabile & \makecell{Non completamente \\ rispettato} \\
+		\makecell[l]{\vspace{-6pt} \\ Documentazione completa \\ \vspace{-6pt}} & Desiderabile & Non rispettato \\
+		\makecell[l]{Ulteriori modifiche all'applicazione che \\ esulano da quando riportato nel piano di \\ lavoro} & Opzionale & Rispettato
+	\end{tabularx}
+	\vspace{5pt}
+	\caption{Tabella dello stato di completamento dei requisiti}
+\end{table}
+
+\noindent Come già spiegato in \S \ref{stage:requisiti}, il conseguimento dei requisiti, in alcuni casi, è stato dipendente da fattori esterni:
+\begin{itemize}
+	\item la suite di testing è stata iniziata, ma, dopo la richiesta da parte del \emph{Project Manager} di dedicarci una quantità di tempo limitata, l'esaustività e la completezza dei test si è ridotta, per questo il requisito è stato contrassegnato come ``Non completamente rispettato'';
+	\item le comunicazioni con il committente sono state spesso soggette a rallentamenti notevoli.\ Ad esempio, durante tutta la durata dello sprint 5, l'azienda che ha commissionato il progetto si è dedicata completamente ad altri progetti, sospendendo le comunicazioni e l'avanzamento dei lavori sul progetto di Evvvents. Tra le varie domande sulle scelte da perseguire nel progetto ne erano previste alcune sullo scopo e le funzionalità che avrebbero dovuto offrire le integrazioni. Non essendo stato possibile definire questi dettagli insieme al committente, entro il periodo dello stage, le integrazioni non sono state implementate, quindi il requisito obbligatorio non è stato implementato. Nonostante questo lo stage è stato considerato concluso con successo.
+\end{itemize}
+Nonostante il mio stage sia giunto al termine, il progetto Evvvents rimane ancora in corso di sviluppo, con diversi aspetti da completare e implementare, data la sua grandezza e complessità.\ Il lavoro verrà portato avanti da un altro stagista, che prenderà il mio posto.
 
 \section{Valutazione personale}
-\intro{Messe alla prova le competenze fornite dal corso di laurea, verificata l'efficacia dei corsi e dei progetti svolti, imparato un nuovo linguaggio e framework con filosofia di sviluppo a me nuova, scoperto ambiente lavorativo aziendale con i ruoli e le dinamiche interne.}
+L'esperienza di stage nel suo complesso è stata un'occasione per mettere alla prova tutte le competenze e le conoscenze fornite dai corsi seguiti in questi anni. Ho avuto modo di sperimentare le mie abilità nel progettare un sistema complesso, partendo dalla ridefinizione dello strato di persistenza, passando per la progettazione delle componenti e delle classi, utilizzando una combinazione strutturata di concetti e insegnamenti, sia pratici che teorici, appresi durante tutto il corso di laurea.
+
+\noindent Lo svolgimento dello stage ha avuto modo di lasciarmi diversi insegnamenti:
+\begin{itemize}
+	\item ho imparato un nuovo linguaggio di programmazione, che ha uno stile diverso dai linguaggi che avevo usato fino a questo momento e che mi ha fatto scoprire l'applicazione di paradigmi e pratiche a me nuove;
+	\item ho imparato la struttura e la filosofia del framework Ruby on Rails, apprezzando (con un occhio critico) le sue convenzioni. Mi ha permesso di consolidare le mie conoscenze sull'applicazione del pattern MVC nello sviluppo di applicazioni web;
+	\item ho notato ancora di più quanto sia importante riferirsi alla documentazione ufficiale del software utilizzato e di fonti affidabili, anche se questo può richiedere un certo tempo e fatica;
+	\item ho scoperto l'ambiente lavorativo aziendale, con tutte le dinamiche che ne derivano, i ruoli del personale, le convenzioni e le metodologie seguite, oltre agli specifici strumenti utilizzati per la gestione dei progetti o della comunicazione aziendale, come Jira, Confluence o Slack;
+	\item ho avuto conferma dell'importanza e del piacere di un confronto con i colleghi, per chiedere o risolvere dubbi e collaborare alla soluzione di un problema.
+\end{itemize}
+
+\noindent Nell'affrontare un'esperienza lavorativa concreta, ho avuto conferma dell'utilità delle varie competenze tecniche che ho appreso grazie allo svolgimento dei progetti, degli approfondimenti personali, svolti parallelamente allo studio e delle competenze trasversali acquisite tramite esperienze esterne. Sono tutte abilità che si potrebbero definire ``di contorno'', ma che permettono di risolvere problemi e difficoltà che si possono presentare durante il mio lavoro, o quello dei miei colleghi.
