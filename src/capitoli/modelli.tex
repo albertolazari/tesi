@@ -1,5 +1,7 @@
 \section{Introduzione}
-La prima attività che ho dovuto svolgere è stata la definizione dei modelli del nuovo backend. Purtroppo l'architettura già presente nel vecchio backend, soprattutto lato database, aveva diversi difetti e andava rivista interamente, quindi è stato necessario partire da un'analisi di quanto già fatto, per capire se fosse necessario effettuare del refactor nella struttura dei dati. In molti casi le entità contenevano molti attributi superflui o non adatti ad essere associati alla specifica entità, perché più adatti ad essere associati attraverso una relazione a un'altra entità. Le decisioni sono state prese anche basandosi sull'analisi dei requisiti già fatta precedentemente al mio arrivo. Questa è stata tradotta in \emph{user stories}, che hanno guidato la successiva fase di codifica.
+La prima attività che ho dovuto svolgere è stata la definizione dei modelli del nuovo backend. Purtroppo l'architettura già presente nel vecchio backend, soprattutto lato database, aveva diversi difetti e andava rivista interamente, quindi è stato necessario partire da un'analisi di quanto già fatto, per capire se fosse necessario effettuare del refactor nella struttura dei dati. In molti casi le entità contenevano molti attributi superflui o non adatti ad essere associati alla specifica entità, perché più adatti ad essere associati attraverso una relazione a un'altra entità.\ Le decisioni sono state prese anche basandosi sull'analisi dei requisiti già fatta precedentemente al mio arrivo. Questa è stata tradotta in \emph{user stories}, che hanno guidato la successiva fase di codifica.
+
+L'architettura per il nuovo backend è quella inferita dalle convenzioni di Rails, soprattutto a causa dell'applicazione del pattern Active Record.\ Essendo le classi dei modelli dell'applicazione strettamente legate alle entità presenti nel database, la loro progettazione è stata fatta proseguire parallelamente, al punto che in molti casi è possibile riferirsi interscambiabilmente a attributi di un'entità o del modello associato. Per riferirsi a modelli ed entità verranno seguite le convenzioni di Rails: i nomi dei modelli sono scritti al singolare in \verb|PascalCase|, mentre quelli delle entità sono al plurale in \verb|snake_case|, ad esempio al modello \verb|EventParticipation| è associata l'entità \verb|event_participations|.
 
 In questo capitolo vengono riportati i cambiamenti e le scelte più significative che sono state fatte durante questa fase, che hanno portato alla produzione del diagramma ER completo dell'applicazione, riportato nell'appendice \ref{cap:ER}.
 
@@ -20,7 +22,7 @@ La prima tabella analizzata è stata quella degli utenti. Nella versione precede
 	\end{itemize}
 	\item \verb|e_users_levels|: memorizzava i ruoli degli utenti e, per ogni azione esposta dall'API, un campo booleano che indicava se quel ruolo avesse l'autorizzazione di effettuare quell'azione.
 \end{itemize}
-Ho deciso di raccogliere queste informazioni in un unico modello, con i campi dell'entità \verb|e_partecipants|, a cui ho aggiunto l'immagine dell'utente e un enumerazione che ne indica il ruolo, invece di utilizzare un'intera entità come era stato fatto precedentemente. I campi necessari per l'autenticazione sono stati omessi, perché già presenti nel \emph{template} dei progetti di Moku, che è stato usato come base di partenza anche per questo.
+Ho deciso di raccogliere queste informazioni in un unico modello \verb|User|, con i campi dell'entità \verb|e_partecipants|, a cui ho aggiunto l'immagine dell'utente e un enumerazione che ne indica il ruolo, invece di utilizzare un'intera entità come era stato fatto precedentemente. I campi necessari per l'autenticazione sono stati omessi, perché già presenti nel \emph{template} dei progetti di Moku, che è stato usato come base di partenza anche per questo.
 
 La motivazione alla base della scelta di non codificare le autorizzazioni all'interno di un modello è stata la complessità del processo di autorizzazione nel dominio trattato, che spesso dipende anche dall'oggetto su cui si vuole eseguire un'azione, qundi non esclusivamente dal ruolo dell'utente.
 
@@ -46,7 +48,8 @@ Le entità create non sono definitive, soprattutto per quanto riguarda gli attri
 
 
 \subsection{Piattaforme}
-\intro{SMTP.}
+Oltre agli attributi relativi alle integrazioni, sono stati rimossi dall'entità \verb|platforms| anche quelli che permettevano la configurazione personalizzata di un server SMTP per ogni piattaforma. La scelta è stata motivata dalla presenza di alcuni casi, già accaduti, in cui questa configurazione non era stata fatta correttamente, portando a notifiche mail non funzionanti. Il motivo dell'accaduto era stata la poca formazione specifica della persona che aveva configurato la piattaforma. Non potendo fare assunzioni sulla persona che avrebbe configurato le piattaforme si è preferito centralizzare il procedimento in Moku: i clienti che desiderano personalizzare le impostazioni SMTP per la loro piattaforma potranno chiedere all'azienda di configurarle, secondo le loro richieste. In questo modo si può garantire il funzionamento delle notifiche mail, essenziali anche solamente per registrare un nuovo utente.
+
 
 \subsection{Reminder}
 \intro{Duplicati in eventi.}
