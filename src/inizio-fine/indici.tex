@@ -2,7 +2,12 @@
 \cleardoublepage
 \pdfbookmark{\contentsname}{tableofcontents}
 \setcounter{tocdepth}{2}
-\tableofcontents
+
+{
+    \hypersetup{linkcolor=black}
+    \tableofcontents
+}
+
 %\markboth{\contentsname}{\contentsname} 
 \clearpage
 
@@ -13,21 +18,25 @@
     % Elenco delle figure
     \phantomsection
     \pdfbookmark{\listfigurename}{lof}
-    \listoffigures
-
-    \vspace*{8ex}
+    {
+        \hypersetup{linkcolor=black}
+        \listoffigures
+    }
 
     % Elenco delle tabelle
     \phantomsection
     \pdfbookmark{\listtablename}{lot}
-    \listoftables
+    {
+        \hypersetup{linkcolor=black}
+        \listoftables
+    }
         
-    \vspace*{8ex}
-
     % Elenco degli esempi di codice
     \phantomsection
-    \listoflistings
-    \vspace*{8ex}
+    {
+        \hypersetup{linkcolor=black}
+        \listoflistings
+    }
 \endgroup
 
 \cleardoublepage
