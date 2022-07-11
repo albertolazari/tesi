@@ -51,11 +51,28 @@ Le entità create non sono definitive, soprattutto per quanto riguarda gli attri
 Oltre agli attributi relativi alle integrazioni, sono stati rimossi dall'entità \verb|platforms| anche quelli che permettevano la configurazione personalizzata di un server SMTP per ogni piattaforma. La scelta è stata motivata dalla presenza di alcuni casi, già accaduti, in cui questa configurazione non era stata fatta correttamente, portando a notifiche mail non funzionanti. Il motivo dell'accaduto era stata la poca formazione specifica della persona che aveva configurato la piattaforma. Non potendo fare assunzioni sulla persona che avrebbe configurato le piattaforme si è preferito centralizzare il procedimento in Moku: i clienti che desiderano personalizzare le impostazioni SMTP per la loro piattaforma potranno chiedere all'azienda di configurarle, secondo le loro richieste. In questo modo si può garantire il funzionamento delle notifiche mail, essenziali anche solamente per registrare un nuovo utente.
 
 
-\subsection{Reminder}
-\intro{Duplicati in eventi.}
-
 \subsection{Eventi}
-\intro{Reminder, integrazioni.}
+L'entità \verb|e_events|, associata al modello degli eventi, era la più estesa del sistema, com'è lecito aspettarsi, essendo questa la funzionalità fulcro dell'intera applicazione. Non è però giustificabile la complessità e la quantità di informazioni che venivano memorizzate nell'entità: molte riguardavano le integrazioni, già rifattorizzate in entità separate, altre saltavano subito all'occhio per essere replicate tre volte:
+\begin{itemize}
+	\item \verb|reminderNDate|,
+	\item \verb|reminderNSent|,
+	\item \verb|reminderNEmailText|,
+	\item \verb|idTemplateEmailReminderN|,
+	\item \verb|reminderNEmailTextOnline|,
+	\item \verb|idTemplateEmailReminderNOnline|.
+\end{itemize}
+Sostituendo $n \in \{1,2,3\}$ a N, si ottengono tutti gli attributi replicati, ad esempio \verb|reminderNSent| era presente come \verb|reminder1Sent|, \verb|reminder2Sent| e \verb|reminder3Sent|. Tutto questo portava l'entità ad avere un totale di ben 84 attributi, un numero decisamente troppo elevato per essere gestibile nel modello di una funzionalità simile. Gli attributi replicati sono stati rifattorizzati in una nuova entità \verb|event_reminders|:
+\begin{itemize}
+	\item \verb|date|,
+	\item \verb|sent|,
+	\item \verb|target|,
+	\item \verb|email_template_id|,
+	\item \verb|email_message|,
+	\item \verb|event_id|.
+\end{itemize}
+
+\noindent La creazione di \verb|event_reminders| è stata motivata dalla possibilità di rendere flessibile il numero di \emph{reminder}, invece di mantenerne uno fisso arbitrario, all'interno di un'entità non strettamente dedicata a rappresentare quei dati. Oltretutto l'entità separata permette di avere un numero variabile di \emph{reminder} tra gli eventi, evitando ridondanza. Il frontend permetteva già di scegliere il numero di \emph{reminder} da inviare, ma se questo era minore di 3, gli attributi duplicati venivano semplicemente resi \verb|NULL|. Infine, la nuova entità prevede l'attributo \verb|target|, che specifica se il messaggio è per gli utenti che parteciperanno fisicamente o online all'evento, evitando ridondanza nel caso in cui si voglia impostare il \emph{reminder} solo per gli uni, piuttosto che per gli altri.
+
 
 \subsection{Partecipazioni}
 \intro{Link per integrazioni.}
