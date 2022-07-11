@@ -228,4 +228,5 @@
 src/*.pdf
 
 **/__latexindent_temp.tex
-
+**/wget.log
+**/svg-inkscape/

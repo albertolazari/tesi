@@ -1,8 +1,95 @@
 \section{Introduzione}
-\intro{Spiegazione del lavoro svolto in questa fase.}
+La prima attività che ho dovuto svolgere è stata la definizione dei modelli del nuovo backend. Purtroppo l'architettura già presente nel vecchio backend, soprattutto lato database, aveva diversi difetti e andava rivista interamente, quindi è stato necessario partire da un'analisi di quanto già fatto, per capire se fosse necessario effettuare del refactor nella struttura dei dati. In molti casi le entità contenevano molti attributi superflui o non adatti ad essere associati alla specifica entità, perché più adatti ad essere associati attraverso una relazione a un'altra entità.\ Le decisioni sono state prese anche basandosi sull'analisi dei requisiti già fatta precedentemente al mio arrivo. Questa è stata tradotta in \emph{user stories}, che hanno guidato la successiva fase di codifica.
 
-\section{Modifiche effettuate}
-\intro{Decisioni significative prese durante l'attività di refactor dei modelli.}
+L'architettura per il nuovo backend è quella inferita dalle convenzioni di Rails, soprattutto a causa dell'applicazione del pattern Active Record.\ Essendo le classi dei modelli dell'applicazione strettamente legate alle entità presenti nel database, la loro progettazione è stata fatta proseguire parallelamente, al punto che in molti casi è possibile riferirsi interscambiabilmente a attributi di un'entità o del modello associato. Per riferirsi a modelli ed entità verranno seguite le convenzioni di Rails: i nomi dei modelli sono scritti al singolare in \verb|PascalCase|, mentre quelli delle entità sono al plurale in \verb|snake_case|, ad esempio al modello \verb|EventParticipation| è associata l'entità \verb|event_participations|.
 
-\section{Diagramma ER completo}
-\intro{Diagramma ER del nuovo backend.}
+In questo capitolo vengono riportati i cambiamenti e le scelte più significative che sono state fatte durante questa fase, che hanno portato alla produzione del diagramma ER completo dell'applicazione, riportato nell'appendice \ref{cap:ER}.
+
+\section{Modifiche significative effettuate}
+\subsection{Utenti} \label{modelli:utenti}
+La prima tabella analizzata è stata quella degli utenti. Nella versione precedente le informazioni relative al modello degli utenti erano divise in tre entità:
+\begin{itemize}
+	\item \verb|e_users|: conteneva i dettagli principali degli utenti, come nome, cognome e email, i campi per la gestione dell'autenticazione e altri, che però erano inutilizzati;
+	\item \verb|e_partecipants|: era dedicata agli utenti partecipanti. Conteneva un sottoinsieme dei campi di \verb|e_users|:
+	\begin{itemize}
+		\item \verb|companyId|,
+		\item \verb|firstName|,
+		\item \verb|lastName|,
+		\item \verb|email|,
+		\item \verb|phone|,
+		\item \verb|createdAt|,
+		\item \verb|status|.
+	\end{itemize}
+	\item \verb|e_users_levels|: memorizzava i ruoli degli utenti e, per ogni azione esposta dall'API, un campo booleano che indicava se quel ruolo avesse l'autorizzazione di effettuare quell'azione.
+\end{itemize}
+Ho deciso di raccogliere queste informazioni in un unico modello \verb|User|, con i campi dell'entità \verb|e_partecipants|, a cui ho aggiunto l'immagine dell'utente e un enumerazione che ne indica il ruolo, invece di utilizzare un'intera entità come era stato fatto precedentemente. I campi necessari per l'autenticazione sono stati omessi, perché già presenti nel \emph{template} dei progetti di Moku, che è stato usato come base di partenza anche per questo.
+
+La motivazione alla base della scelta di non codificare le autorizzazioni all'interno di un modello è stata la complessità del processo di autorizzazione nel dominio trattato, che spesso dipende anche dall'oggetto su cui si vuole eseguire un'azione, qundi non esclusivamente dal ruolo dell'utente.
+
+La scelta di unire i partecipanti (corretti in ``participants'', invece di ``partecipants'') al resto degli utenti è stata presa per ridurre la duplicazione dei dati, in questo caso rilevante, perché le due entità, una volta riviste, avrebbero avuto quasi tutti i campi in comune. Inoltre, seppur vero che i partecipanti non possono effettuare l'autenticazione nell'applicazione web, utilizzano l'applicazione \emph{mobile}, che utilizzerà lo stesso backend.
+
+
+\subsection{Integrazioni} \label{modelli:integrazioni}
+L'aspetto che più è stato cambiato nella nuova versione è il modo in cui vengono memorizzate le informazioni relative alle integrazioni. Nella versione precedente queste non erano strutturate in alcun modo: erano contenute in ben 4 entità diverse, pensate per essere dedicate ad altri tipi di dati, come intuibile dai nomi:
+\begin{itemize}
+	\item \verb|e_platforms|: qui venivano salvate le integrazioni abilitate per la piattaforma, cioè disponibili a tutti gli organizzatori sotto quella specifica piattaforma. L'informazione era memorizzata attraverso in un attributo booleano per ogni integrazione;
+	\item \verb|e_companies|: qui erano contenuti i token di accesso alle API delle integrazioni ed eventuali chiavi o link necessari;
+	\item \verb|e_events|: qui venivano memorizzati id, chiavi o altri dettagli dei meeting dell'evento;
+	\item \verb|e_events_users_link|: qui venivano salvati alcuni link per l'accesso al meeting dell'evento.
+\end{itemize}
+Come si può vedere, l'informazione era distribuita su diversi attributi, che avrebbero potuto essere rifattorizzati in entità separate, così da poter permettere anche l'aggiunta, la rimozione o la modifica delle varie integrazioni disponibili, invece di mantenerle \emph{hardcoded} nel database. Questo ha portato alla creazione di 3 entità interamente dedicate alle integrazioni:
+\begin{itemize}
+	\item \verb|integrations|: contiene i nomi delle integrazioni disponibili nell'applicazione. Le piattaforme dichiarano le integrazioni utilizzate basandosi su quelle presenti in questa entità;
+	\item \verb|organizer_integrations|: memorizza le integrazioni rese disponibili per ogni organizzatore, tra quelle disponibili per la sua piattaforma, e i dettagli dell'integrazione, necessari agli organizzatori;
+	\item \verb|event_integrations|: memorizza le integrazioni rese disponibili per ogni evento, tra quelle disponibili per il suo organizzatore, e i dettagli dell'integrazione necessari all'evento;
+	\item \verb|active_campaign_event_integration_details|: contiene i dettagli aggiuntivi, necessari all'integrazione ActiveCampaign.
+\end{itemize}
+Le entità create non sono definitive, soprattutto per quanto riguarda gli attributi. Una volta effettuata un'analisi più approfondita di ogni integrazione e sullo scopo di ognuna, si valuterà se rivedere questa struttura.
+
+
+\subsection{Piattaforme}
+Oltre agli attributi relativi alle integrazioni, sono stati rimossi dall'entità \verb|platforms| anche quelli che permettevano la configurazione personalizzata di un server SMTP per ogni piattaforma. La scelta è stata motivata dalla presenza di alcuni casi, già accaduti, in cui questa configurazione non era stata fatta correttamente, portando a notifiche mail non funzionanti. Il motivo dell'accaduto era stata la poca formazione specifica della persona che aveva configurato la piattaforma. Non potendo fare assunzioni sulla persona che avrebbe configurato le piattaforme si è preferito centralizzare il procedimento in Moku: i clienti che desiderano personalizzare le impostazioni SMTP per la loro piattaforma potranno chiedere all'azienda di configurarle, secondo le loro richieste. In questo modo si può garantire il funzionamento delle notifiche mail, essenziali anche solamente per registrare un nuovo utente.
+
+
+\subsection{Eventi}
+L'entità \verb|e_events|, associata al modello degli eventi, era la più estesa del sistema, com'è lecito aspettarsi, essendo questa la funzionalità fulcro dell'intera applicazione. Non è però giustificabile la complessità e la quantità di informazioni che venivano memorizzate nell'entità: molte riguardavano le integrazioni, già rifattorizzate in entità separate, altre saltavano subito all'occhio per essere replicate tre volte:
+\begin{itemize}
+	\item \verb|reminderNDate|,
+	\item \verb|reminderNSent|,
+	\item \verb|reminderNEmailText|,
+	\item \verb|idTemplateEmailReminderN|,
+	\item \verb|reminderNEmailTextOnline|,
+	\item \verb|idTemplateEmailReminderNOnline|.
+\end{itemize}
+Sostituendo $n \in \{1,2,3\}$ a N, si ottengono tutti gli attributi replicati, ad esempio \verb|reminderNSent| era presente come \verb|reminder1Sent|, \verb|reminder2Sent| e \verb|reminder3Sent|. Tutto questo portava l'entità ad avere un totale di ben 84 attributi, un numero decisamente troppo elevato per essere gestibile nel modello di una funzionalità simile. Gli attributi replicati sono stati rifattorizzati in una nuova entità \verb|event_reminders|:
+\begin{itemize}
+	\item \verb|date|,
+	\item \verb|sent|,
+	\item \verb|target|,
+	\item \verb|email_template_id|,
+	\item \verb|email_message|,
+	\item \verb|event_id|.
+\end{itemize}
+
+\noindent La creazione di \verb|event_reminders| è stata motivata dalla possibilità di rendere flessibile il numero di \emph{reminder}, invece di mantenerne uno fisso arbitrario, all'interno di un'entità non strettamente dedicata a rappresentare quei dati. Oltretutto l'entità separata permette di avere un numero variabile di \emph{reminder} tra gli eventi, evitando ridondanza. Il frontend permetteva già di scegliere il numero di \emph{reminder} da inviare, ma se questo era minore di 3, gli attributi duplicati venivano semplicemente resi \verb|NULL|. Infine, la nuova entità prevede l'attributo \verb|target|, che specifica se il messaggio è per gli utenti che parteciperanno fisicamente o online all'evento, evitando ridondanza nel caso in cui si voglia impostare il \emph{reminder} solo per gli uni, piuttosto che per gli altri.
+
+Nonostante queste modifiche il modello \verb|Event| rimane abbastanza complesso, quindi non si escludono modifiche future, una volta arrivati alla sua implementazione. È probabile che, con l'avanzamento della codifica, si noti la necessità di ulteriori modifiche e ottimizzazioni, anche grazie a una conoscenza più approfondita del dominio. Per la durata del mio stage questo non è stato possibile, quindi viene riportata nel diagramma ER in appendice la mia proposta pensata nella fase di progettazione, che non va intesa come una versione definitiva dell'entità.
+
+
+\subsection{Partecipazioni}
+Nella vecchia versione del backend i partecipanti non venivano considerati dei normali utenti del sistema, ma venivano salvati separatamente, nell'entità \verb|e_partecipants|. Come discusso in \S \ref{modelli:utenti}, ora anche i partecipanti vengono gestiti nel modello \verb|User|, per cui le partecipazioni agli eventi dovranno avere una relazione con l'entità \verb|users|. Questo permette anche alle altre categorie di utenti di partecipare a un evento, senza creare un account separato con il ruolo di partecipante.
+
+Rispetto all'entità originale \verb|e_events_users_link|, che si occupava di rappresentare le partecipazioni a uno specifico evento, sono stati rimossi i link di accesso ai meeting, spostati nelle entità delle integrazioni, come descritto in \S \ref{modelli:integrazioni}.
+
+Un ultimo dettaglio modificato, rispetto all'entità originale, è la relazione con l'entità \verb|event_participation_credits|. Questa si occupa di tenere traccia dei crediti guadagnati da un utente nella partecipazione a un evento. Prima questa si riferiva direttamente all'evento interessato, ma essendo i crediti dipendenti dalla partecipazione dell'utente all'evento, la modifica è sembrata logica. In alcuni casi i crediti ``guadagnati'' possono essere negativi, ad esempio nel caso in cui un utente non partecipi effettivamente all'evento, quindi senza eseguire il check-in. In questo caso il sistema funziona lo stesso, perché il modello \verb|EventParticipation| tiene solamente traccia delle iscrizioni a un evento, quindi alla volontà da parte dell'utente di partecipare; il tracciamento dell'effettiva partecipazione e della sua durata viene viene delegato al modello \verb|EventParticipationOperation|.
+
+
+\subsection{Altre modifiche minori}
+Sono state effettuate anche altre modifiche minori nei modelli che non sono stati citati. Di queste non ritengo sia utile una descrizione dettagliata, vengono solamente riportate di seguito:
+\begin{itemize}
+	\item assegnati nomi più intuitivi e coerenti con il dominio ad attributi e modelli, ad esempio gli organizzatori venivano chiamati \emph{companies}. Questo creava confusione, perché il nome non corrispondeva al termine utilizzato nel frontend;
+	\item rimossi gli attributi inutilizzati;
+	\item alcuni attributi booleani sono stati resi uno stato del modello, ad esempio \verb|e_message| possedeva l'attributo \verb|isLetto| per segnalare la lettura di un messaggio, mentre la nuova entità \verb|conversation_messages| lo segnala impostando il valore \verb|read| all'enumerazione \verb|status|;
+	\item assegnati tipi più espliciti agli attributi: molte entità possedevano diverse stringhe, quando queste potevano essere espresse con enumerazioni, date, testi o numeri;
+	\item rimossi i \emph{counter}: alcuni modelli avevano la necessità di tenere traccia dell'ordine di creazione dei record, quindi ricorrevano ad attributi ad auto-incremento, perché gli identificativi erano testuali. In Rails i modelli possiedono sempre un identificativo ad auto-incremento, quindi l'attributo aggiuntivo risulta superfuo.
+\end{itemize}
