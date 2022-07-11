@@ -1,5 +1,18 @@
 \section{Introduzione al progetto}
-Infinite Area, una piattaforma dell'innovazione, ha ideato e sviluppato un'applicazione web per l'organizzazione e la gestione di eventi e conferenze dal vivo, online e ibride, denominata Evvvents.\ L'applicazione si propone come un \emph{software as a service}, configurabile nell'aspetto e nelle funzionalità, in base alle preferenze dell'utente. In questo modo ogni utente che possiede un piano di iscrizione all'applicazione, un \emph{tenant}, gestisce la sua versione del software, rendendo Evvvents nel suo complesso un \emph{software multi tenant}. I \emph{tenant} si identificano all'interno dell'applicazione come ``piattaforme''; ogni piattaforma gestisce più aziende, dette ``organizzatori'', perché dirette responsabili della creazione e organizzazione degli eventi, il fulcro del software. Sono presenti diverse funzionalità relative agli eventi:
+\subsection{Presentazione del dominio}
+Infinite Area, una piattaforma dell'innovazione, ha ideato e sviluppato un'applicazione web per l'organizzazione e la gestione di eventi e conferenze dal vivo, online e ibride, denominata Evvvents.\ L'applicazione si propone come un \emph{software as a service}, configurabile nell'aspetto e nelle funzionalità, in base alle preferenze dell'utente. In questo modo ogni utente che possiede un piano di iscrizione all'applicazione, un \emph{tenant}, gestisce la sua versione del software, rendendo Evvvents nel suo complesso un \emph{software multi tenant}. I \emph{tenant} si identificano all'interno dell'applicazione come ``piattaforme''; ogni piattaforma gestisce più aziende, dette ``organizzatori'', perché dirette responsabili della creazione e organizzazione degli eventi, il fulcro del software.
+
+L'applicazione web è pensata per gestire l'organizzazione degli eventi. Non viene utilizzata dagli utenti finali, cioè quelli che si iscrivono e partecipano agli eventi, perché loro utilizzano un'applicazione \emph{mobile}. Ci sono diversi ruoli di utenti in tutto il sistema, che hanno permessi e funzioni diverse:
+\begin{itemize}
+	\item super admin: ha una visione ad alto livello dell'applicazione e può gestirne ogni aspetto. Si occupa principalmente di creare le piattaforme e i loro admin;
+	\item admin: gestisce tutto all'interno della sua piattaforma, in particolare gli organizzatori;
+	\item manager: si occupa di gestire l'organizzatore (l'azienda all'interno della piattaforma) e di pianificare gli eventi;
+	\item staff: gestisce principalmente i check-in dei partecipanti durante gli eventi. Si occupa della gestione dei singoli eventi che gli vengono assegnati;
+	\item \emph{speaker} o relatore: partecipa agli eventi per fare degli interventi;
+	\item partecipante: può essere iscritto agli eventi. Non può accedere o eseguire nessun tipo di azione dall'interfaccia web.
+\end{itemize}
+
+\noindent Per quanto riguarda gli eventi, sono presenti diverse funzionalità disponibili ai partecipanti e agli altri tipi di utenti:
 \paragraph{Sistemi di videoconferenze} Per ogni evento è possibile specificare l'integrazione con diversi sistemi di videoconferenze, tra cui:
 \begin{itemize}
 	\item Zoom meeting e webinar
@@ -13,7 +26,7 @@ Infinite Area, una piattaforma dell'innovazione, ha ideato e sviluppato un'appli
 \paragraph{Notifiche} Ogni piattaforma può decidere di richiedere l'integrazione con il sistema di notifiche push e SMS per gli eventi. Le notifiche possono essere anche inviate via mail ai partecipanti e possono essere automatiche o programmate.
 \paragraph{Sistema di crediti} Le piattaforme possono anche decidere di utilizzare l'integrazione con il sistema dei crediti, in cui ogni evento permette agli utenti di guadagnare un numero specificato di crediti, in base alla durata della partecipazione all'evento.
 
-\paragraph{}
+\subsection{Il progetto}
 Dopo aver realizzato una prima versione prototipale di Evvvents, Infinite Area si è rivolta a Moku, chiedendo di apportare modifiche e miglioramenti all'applicazione. A seguito di un'attività di analisi effettuata da Moku, è risultato che il frontend sarebbe stato mantenuto e fatto evolvere, mentre il backend presentava grossi limiti, funzionali e strutturali. Mantenerlo e modificarlo per raggiungere uno standard di qualità adeguato sarebbe costato più tempo e risorse di una riscrittura completa, quindi è stata presa la decisione di svilupparlo da zero con le tecnologie utilizzate da Moku per prassi aziendale, per quanto possibile, puntando a ricreare una API quanto più simile a quella esistente, per limitare le modifiche necessarie sul frontend.
 
 Lo scopo del progetto di stage è stata la realizzazione della nuova versione del backend, partendo da un'attività di analisi dettagliata della versione originale, passando per la progettazione della nuova versione.
