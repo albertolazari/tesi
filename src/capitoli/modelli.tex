@@ -6,7 +6,7 @@ L'architettura per il nuovo backend è quella inferita dalle convenzioni di Rail
 In questo capitolo vengono riportati i cambiamenti e le scelte più significative che sono state fatte durante questa fase, che hanno portato alla produzione del diagramma ER completo dell'applicazione, riportato nell'appendice \ref{cap:ER}.
 
 \section{Modifiche significative effettuate}
-\subsection{Utenti}
+\subsection{Utenti} \label{modelli:utenti}
 La prima tabella analizzata è stata quella degli utenti. Nella versione precedente le informazioni relative al modello degli utenti erano divise in tre entità:
 \begin{itemize}
 	\item \verb|e_users|: conteneva i dettagli principali degli utenti, come nome, cognome e email, i campi per la gestione dell'autenticazione e altri, che però erano inutilizzati;
@@ -29,7 +29,7 @@ La motivazione alla base della scelta di non codificare le autorizzazioni all'in
 La scelta di unire i partecipanti (corretti in ``participants'', invece di ``partecipants'') al resto degli utenti è stata presa per ridurre la duplicazione dei dati, in questo caso rilevante, perché le due entità, una volta riviste, avrebbero avuto quasi tutti i campi in comune. Inoltre, seppur vero che i partecipanti non possono effettuare l'autenticazione nell'applicazione web, utilizzano l'applicazione \emph{mobile}, che utilizzerà lo stesso backend.
 
 
-\subsection{Integrazioni}
+\subsection{Integrazioni} \label{modelli:integrazioni}
 L'aspetto che più è stato cambiato nella nuova versione è il modo in cui vengono memorizzate le informazioni relative alle integrazioni. Nella versione precedente queste non erano strutturate in alcun modo: erano contenute in ben 4 entità diverse, pensate per essere dedicate ad altri tipi di dati, come intuibile dai nomi:
 \begin{itemize}
 	\item \verb|e_platforms|: qui venivano salvate le integrazioni abilitate per la piattaforma, cioè disponibili a tutti gli organizzatori sotto quella specifica piattaforma. L'informazione era memorizzata attraverso in un attributo booleano per ogni integrazione;
@@ -75,4 +75,12 @@ Sostituendo $n \in \{1,2,3\}$ a N, si ottengono tutti gli attributi replicati, a
 
 
 \subsection{Partecipazioni}
-\intro{Link per integrazioni.}
+Nella vecchia versione del backend i partecipanti non venivano considerati dei normali utenti del sistema, ma venivano salvati separatamente, nell'entità \verb|e_partecipants|. Come discusso in \S \ref{modelli:utenti}, ora anche i partecipanti vengono gestiti nel modello \verb|User|, per cui le partecipazioni agli eventi dovranno avere una relazione con l'entità \verb|users|. Questo permette anche alle altre categorie di utenti di partecipare a un evento, senza creare un account separato con il ruolo di partecipante.
+
+Rispetto all'entità originale \verb|e_events_users_link|, che si occupava di rappresentare le partecipazioni a uno specifico evento, sono stati rimossi i link di accesso ai meeting, spostati nelle entità delle integrazioni, come descritto in \S \ref{modelli:integrazioni}.
+
+Un ultimo dettaglio modificato, rispetto all'entità originale, è la relazione con l'entità \verb|event_participation_credits|. Questa si occupa di tenere traccia dei crediti guadagnati da un utente nella partecipazione a un evento. Prima questa si riferiva direttamente all'evento interessato, ma essendo i crediti dipendenti dalla partecipazione dell'utente all'evento, la modifica è sembrata logica. In alcuni casi i crediti ``guadagnati'' possono essere negativi, ad esempio nel caso in cui un utente non partecipi effettivamente all'evento, quindi senza eseguire il check-in. In questo caso il sistema funziona lo stesso, perché il modello \verb|EventParticipation| tiene solamente traccia delle iscrizioni a un evento, quindi alla volontà da parte dell'utente di partecipare; il tracciamento dell'effettiva partecipazione e della sua durata viene viene delegato al modello \verb|EventParticipationOperation|.
+
+
+\subsection{Altre modifiche minori}
+
