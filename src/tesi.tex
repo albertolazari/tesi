@@ -1,31 +1,33 @@
-        %%******************************************%%
-        %%                                          %%
-        %%        Modello di tesi di laurea         %%
-        %%            di Andrea Giraldin            %%
-        %%                                          %%
-        %%             2 novembre 2012              %%
-        %%                                          %%
-        %%******************************************%%
+				%%******************************************%%
+				%%                                          %%
+				%%        Modello di tesi di laurea         %%
+				%%            di Andrea Giraldin            %%
+				%%                                          %%
+				%%             2 novembre 2012              %%
+				%%                                          %%
+				%%******************************************%%
 
 % !TEX spellcheck = it-IT     controllo ortografico italiano per l'editor
 
 % PDF/A filecontents
 \RequirePackage{filecontents}
 \begin{filecontents*}{\jobname.xmpdata}
-  \Title{Analisi, progettazione e sviluppo del backend di un'applicazione web per la gestione di eventi}
-  \Author{Alberto Lazari}
-  \Language{it-IT}
-  \Subject{Moku S.r.l. sta sviluppando per conto di un'importante realtà del territorio un'applicazione web per la gestione di eventi fisici, online e ibridi. L'obiettivo dell'applicazione è quello di essere un software as a service multi tenant che possa soddisfare le esigenze di diversi tipi di organizzatori di eventi, siano essi fiere, convegni o corsi di formazione.}
-  \Keywords{Backend \sep Ruby on Rails \sep Videoconferenze \sep Gestione eventi}
+	\Title{Analisi, progettazione e sviluppo del backend di un'applicazione web per la gestione di eventi}
+	\Author{Alberto Lazari}
+	\Language{it-IT}
+	\Subject{Moku S.r.l. sta sviluppando per conto di un'importante realtà del territorio un'applicazione web per la gestione di eventi fisici, online e ibridi. L'obiettivo dell'applicazione è quello di essere un software as a service multi tenant che possa soddisfare le esigenze di diversi tipi di organizzatori di eventi, siano essi fiere, convegni o corsi di formazione.}
+	\Keywords{Backend \sep Ruby on Rails \sep Videoconferenze \sep Gestione eventi}
 \end{filecontents*}
 
-\documentclass[10pt,      % corpo del font principale
-               a4paper,   % carta A4
-               twoside,   % impagina per fronte-retro
-               openright, % inizio capitoli a destra
-               english,
-               italian,
-               ]{book}
+\documentclass[
+	10pt,      % corpo del font principale
+	a4paper,   % carta A4
+	twoside,   % impagina per fronte-retro
+	%oneside,  % per pdf
+	openright, % inizio capitoli a destra
+	english,
+	italian
+]{book}
 
 % Importazione package
 
@@ -72,7 +74,8 @@
 
 \usepackage{hyperref}                   % collegamenti ipertestuali
 
-\usepackage[binding=5mm]{layaureo}      % margini ottimizzati per l'A4; rilegatura di 5 mm
+\usepackage[binding=9.5mm]{layaureo}	% layout simmetrico, per i pdf
+%\usepackage[binding=5mm]{layaureo}      % margini ottimizzati per l'A4; rilegatura di 5 mm
 
 \usepackage{listings}                   % codici
 
@@ -114,10 +117,10 @@
 \usepackage[outputdir=build]{minted}
 \usemintedstyle{emacs}
 \setminted{
-  bgcolor=lightgray,
-  fontsize=\small,
-  tabsize=2,
-  breaklines
+	bgcolor=lightgray,
+	fontsize=\small,
+	tabsize=2,
+	breaklines
 }
 
 % Environment per il codice
@@ -125,14 +128,14 @@
 \makeatletter
 \newenvironment{code}[2][ruby]
 {
-  \VerbatimEnvironment
-  \begin{listing}[H]
-    \caption{#2}
-    \begin{minted}{#1}
+	\VerbatimEnvironment
+	\begin{listing}[H]
+		\caption{#2}
+		\begin{minted}{#1}
 }
 {
-    \end{minted}
-  \end{listing}
+		\end{minted}
+	\end{listing}
 }
 \makeatother
 
@@ -140,48 +143,48 @@
 \input{tesi-config}
 
 \begin{document}
-  % Materiale iniziale
-  \frontmatter
-  \input{inizio-fine/frontespizio}
-  \input{inizio-fine/colophon}
-  \input{inizio-fine/sommario}
-  \input{inizio-fine/ringraziamenti}
-  \input{inizio-fine/indici}
-  \cleardoublepage
+	% Materiale iniziale
+	\frontmatter
+	\input{inizio-fine/frontespizio}
+	\input{inizio-fine/colophon}
+	\input{inizio-fine/sommario}
+	\input{inizio-fine/ringraziamenti}
+	\input{inizio-fine/indici}
+	\cleardoublepage
 
-  % Capitoli
-  \mainmatter
+	% Capitoli
+	\mainmatter
 
-  \chapter{L'azienda}
-  \label{cap:azienda}   
-  \input{capitoli/azienda}
+	\chapter{L'azienda}
+	\label{cap:azienda}   
+	\input{capitoli/azienda}
 
-  \chapter{Descrizione dello stage}
-  \label{cap:descrizione-stage}
-  \input{capitoli/descrizione-stage}
+	\chapter{Descrizione dello stage}
+	\label{cap:descrizione-stage}
+	\input{capitoli/descrizione-stage}
 
-  \chapter{Analisi e refactor dei modelli}
-  \label{cap:modelli}
-  \input{capitoli/modelli}
+	\chapter{Analisi e refactor dei modelli}
+	\label{cap:modelli}
+	\input{capitoli/modelli}
 
-  \chapter{Progettazione della API}
-  \label{cap:api}
-  \input{capitoli/api}
-  
-  \chapter{Codifica}
-  \label{cap:codifica}
-  \input{capitoli/codifica}
+	\chapter{Progettazione della API}
+	\label{cap:api}
+	\input{capitoli/api}
+	
+	\chapter{Codifica}
+	\label{cap:codifica}
+	\input{capitoli/codifica}
 
-  \chapter{Conclusioni}
-  \label{cap:conclusioni}
-  \input{capitoli/conclusioni}
+	\chapter{Conclusioni}
+	\label{cap:conclusioni}
+	\input{capitoli/conclusioni}
 
-  \appendix
-  \chapter{Diagramma ER del sistema}
-  \label{cap:ER}
-  \input{capitoli/ER}
-  
-  % Materiale finale
-  \backmatter
-  \input{inizio-fine/bibliografia}
+	\appendix
+	\chapter{Diagramma ER del sistema}
+	\label{cap:ER}
+	\input{capitoli/ER}
+	
+	% Materiale finale
+	\backmatter
+	\input{inizio-fine/bibliografia}
 \end{document}
