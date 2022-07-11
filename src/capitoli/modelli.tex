@@ -73,6 +73,8 @@ Sostituendo $n \in \{1,2,3\}$ a N, si ottengono tutti gli attributi replicati, a
 
 \noindent La creazione di \verb|event_reminders| è stata motivata dalla possibilità di rendere flessibile il numero di \emph{reminder}, invece di mantenerne uno fisso arbitrario, all'interno di un'entità non strettamente dedicata a rappresentare quei dati. Oltretutto l'entità separata permette di avere un numero variabile di \emph{reminder} tra gli eventi, evitando ridondanza. Il frontend permetteva già di scegliere il numero di \emph{reminder} da inviare, ma se questo era minore di 3, gli attributi duplicati venivano semplicemente resi \verb|NULL|. Infine, la nuova entità prevede l'attributo \verb|target|, che specifica se il messaggio è per gli utenti che parteciperanno fisicamente o online all'evento, evitando ridondanza nel caso in cui si voglia impostare il \emph{reminder} solo per gli uni, piuttosto che per gli altri.
 
+Nonostante queste modifiche il modello \verb|Event| rimane abbastanza complesso, quindi non si escludono modifiche future, una volta arrivati alla sua implementazione. È probabile che, con l'avanzamento della codifica, si noti la necessità di ulteriori modifiche e ottimizzazioni, anche grazie a una conoscenza più approfondita del dominio. Per la durata del mio stage questo non è stato possibile, quindi viene riportata nel diagramma ER in appendice la mia proposta pensata nella fase di progettazione, che non va intesa come una versione definitiva dell'entità.
+
 
 \subsection{Partecipazioni}
 Nella vecchia versione del backend i partecipanti non venivano considerati dei normali utenti del sistema, ma venivano salvati separatamente, nell'entità \verb|e_partecipants|. Come discusso in \S \ref{modelli:utenti}, ora anche i partecipanti vengono gestiti nel modello \verb|User|, per cui le partecipazioni agli eventi dovranno avere una relazione con l'entità \verb|users|. Questo permette anche alle altre categorie di utenti di partecipare a un evento, senza creare un account separato con il ruolo di partecipante.
@@ -83,4 +85,11 @@ Un ultimo dettaglio modificato, rispetto all'entità originale, è la relazione 
 
 
 \subsection{Altre modifiche minori}
-
+Sono state effettuate anche altre modifiche minori nei modelli che non sono stati citati. Di queste non ritengo sia utile una descrizione dettagliata, vengono solamente riportate di seguito:
+\begin{itemize}
+	\item assegnati nomi più intuitivi e coerenti con il dominio ad attributi e modelli, ad esempio gli organizzatori venivano chiamati \emph{companies}. Questo creava confusione, perché il nome non corrispondeva al termine utilizzato nel frontend;
+	\item rimossi gli attributi inutilizzati;
+	\item alcuni attributi booleani sono stati resi uno stato del modello, ad esempio \verb|e_message| possedeva l'attributo \verb|isLetto| per segnalare la lettura di un messaggio, mentre la nuova entità \verb|conversation_messages| lo segnala impostando il valore \verb|read| all'enumerazione \verb|status|;
+	\item assegnati tipi più espliciti agli attributi: molte entità possedevano diverse stringhe, quando queste potevano essere espresse con enumerazioni, date, testi o numeri;
+	\item rimossi i \emph{counter}: alcuni modelli avevano la necessità di tenere traccia dell'ordine di creazione dei record, quindi ricorrevano ad attributi ad auto-incremento, perché gli identificativi erano testuali. In Rails i modelli possiedono sempre un identificativo ad auto-incremento, quindi l'attributo aggiuntivo risulta superfuo.
+\end{itemize}
