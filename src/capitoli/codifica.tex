@@ -101,12 +101,15 @@ class Organizer < ActiveRecord::Base
 end
 \end{code}
 
-\begin{code}{File di spec generato dal comando \texttt{rails generate model}}
+\begin{minted}{ruby}
 # spec/models/organizer_spec.rb
 
 require 'rails_helper'
-
 RSpec.describe Organizer, type: :model do
+\end{minted}
+
+
+\begin{code}{File di spec generato dal comando \texttt{rails generate model}}
   pending "add some examples to (or delete) #{__FILE__}"
 end
 \end{code}
@@ -127,13 +130,15 @@ Oltre alle associazioni con i modelli sono state specificate le associazioni con
 
 Proseguendo con l'esempio dell'implementazione degli organizzatori, il file della classe \verb|Organizer| con le associazioni dichiarate risulta essere il seguente:
 
-\begin{code}{Classe \texttt{Organizer} con le associazioni}
+\begin{minted}{ruby}
 # app/models/organizer.rb
 
 class Organizer < ApplicationRecord
   belongs_to :platform
   belongs_to :creator, class_name: 'User', inverse_of: :created_organizers, optional: true
+\end{minted}
 
+\begin{code}{Classe \texttt{Organizer} con le associazioni}
   has_many :locations, dependent: :nullify
 
   has_one_attached :logo
@@ -147,15 +152,14 @@ L'ultima fase di sviluppo della parte di modello sono le validazioni sugli attri
 
 Aggiungendo le validazioni sugli attributi, il file di esempio degli organizzatori diventa:
 
-\begin{code}{Classe \texttt{Organizer} con le validazioni}
+\begin{minted}{ruby}
 # app/models/organizer.rb
 
 class Organizer < ApplicationRecord
-  belongs_to :platform
+belongs_to :platform
   belongs_to :creator, class_name: 'User', inverse_of: :created_organizers, optional: true
-
+  
   has_many :locations, dependent: :nullify
-
   has_one_attached :logo
   validates :logo, attached: true, content_type: ['image/png', 'image/jpeg']
 
@@ -163,7 +167,9 @@ class Organizer < ApplicationRecord
             :vat,
             :address,
             presence: true
+\end{minted}
 
+\begin{code}{Classe \texttt{Organizer} con le validazioni}
   validates :vat, uniqueness: true
 
   validates :creator, presence: true, on: :create
@@ -183,20 +189,20 @@ Quasi tutti i modelli implementati nel corso del progetto hanno un'associazione 
 # app/models/organizer.rb
 
 class Organizer < ApplicationRecord
-	include Creator
-	belongs_to :platform
+  include Creator
+  belongs_to :platform
+  
+  has_many :locations, dependent: :nullify
+  
+  has_one_attached :logo
+  validates :logo, attached: true, content_type: ['image/png', 'image/jpeg']
+  
+  validates :name,
+            :vat,
+            :address,
+            presence: true
 
-	has_many :locations, dependent: :nullify
-
-	has_one_attached :logo
-	validates :logo, attached: true, content_type: ['image/png', 'image/jpeg']
-
-	validates :name,
-			:vat,
-			:address,
-			presence: true
-
-	validates :vat, uniqueness: true
+  validates :vat, uniqueness: true
 end
 \end{code}
 
