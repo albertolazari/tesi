@@ -1,0 +1,189 @@
+				%%******************************************%%
+				%%                                          %%
+				%%        Modello di tesi di laurea         %%
+				%%            di Andrea Giraldin            %%
+				%%                                          %%
+				%%             2 novembre 2012              %%
+				%%                                          %%
+				%%******************************************%%
+
+% !TEX spellcheck = it-IT     controllo ortografico italiano per l'editor
+
+% PDF/A filecontents
+\RequirePackage{filecontents}
+\begin{filecontents*}{\jobname.xmpdata}
+	\Title{Analisi, progettazione e sviluppo del backend di un'applicazione web per la gestione di eventi}
+	\Author{Alberto Lazari}
+	\Language{it-IT}
+	\Subject{Moku S.r.l. sta sviluppando per conto di un'importante realtà del territorio un'applicazione web per la gestione di eventi fisici, online e ibridi. L'obiettivo dell'applicazione è quello di essere un software as a service multi tenant che possa soddisfare le esigenze di diversi tipi di organizzatori di eventi, siano essi fiere, convegni o corsi di formazione.}
+	\Keywords{Backend \sep Ruby on Rails \sep Videoconferenze \sep Gestione eventi}
+\end{filecontents*}
+
+\documentclass[
+	10pt,      % corpo del font principale
+	a4paper,   % carta A4
+	twoside,   % impagina per fronte-retro
+	openright, % inizio capitoli a destra
+	english,
+	italian
+]{book}
+
+% Importazione package
+
+\PassOptionsToPackage{table}{xcolor}
+
+% colori PDF/A
+\PassOptionsToPackage{dvipsnames}{xcolor}
+
+\usepackage{colorprofiles}
+
+% configurazione PDF/A
+% validare in https://www.pdf-online.com/osa/validate.aspx
+\usepackage[a-2b,mathxmp]{pdfx}[2018/12/22]
+
+% formule matematiche
+%\usepackage{amsmath,amssymb,amsthm}
+
+% codifica dei font:
+% NOTA BENE! richiede una distribuzione *completa* di LaTeX
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% per scrivere in italiano e in inglese
+% l'ultima lingua (l'italiano) risulta predefinita
+\usepackage[english, italian]{babel}
+
+\usepackage{bookmark}                   % segnalibri
+
+\usepackage{caption}                    % didascalie
+
+\usepackage{chngpage,calc}              % centra il frontespizio
+
+\usepackage{csquotes}                   % gestisce automaticamente i caratteri (")
+
+\usepackage{emptypage}                  % pagine vuote senza testatina e piede di pagina
+
+\usepackage{epigraph}			              % per le citazioni
+
+\usepackage{eurosym}                    % simbolo dell'euro
+
+%\usepackage{indentfirst}               % rientra il primo paragrafo di ogni sezione
+
+\usepackage{graphicx}                   % immagini
+
+\usepackage{hyperref}                   % collegamenti ipertestuali
+
+\usepackage[binding=5mm]{layaureo}      % margini ottimizzati per l'A4; rilegatura di 5 mm
+
+\usepackage{listings}                   % codici
+
+\usepackage{microtype}                  % microtipografia
+
+\usepackage{mparhack,fixltx2e,relsize}  % finezze tipografiche
+
+\usepackage{nameref}                    % visualizza nome dei riferimenti                                      
+\usepackage[font=small]{quoting}        % citazioni
+
+\usepackage{subfig}                     % sottofigure, sottotabelle
+
+\usepackage[italian]{varioref}          % riferimenti completi della pagina
+
+\usepackage{booktabs}                   % tabelle                                       
+\usepackage{tabularx}                   % tabelle di larghezza prefissata                                    
+\usepackage{longtable}                  % tabelle su più pagine                                        
+\usepackage{ltxtable}                   % tabelle su più pagine e adattabili in larghezza
+
+% glossario
+% per includerlo nel documento bisogna:
+%   1. compilare una prima volta tesi.tex
+%   2. eseguire: makeindex -s tesi.ist -t tesi.glg -o tesi.gls tesi.glo
+%   3. eseguire: makeindex -s tesi.ist -t tesi.alg -o tesi.acr tesi.acn
+%   4. compilare due volte tesi.tex
+\usepackage[toc, acronym]{glossaries}
+
+% eccellente pacchetto per la bibliografia
+% produce uno stile di citazione autore-anno
+% lo stile "numeric-comp" produce riferimenti numerici
+% per includerlo nel documento bisogna:
+%   1. compilare una prima volta tesi.tex
+%   2. eseguire: biber tesi
+%   3. compilare ancora tesi.tex
+\usepackage[backend=biber,style=verbose-ibid,hyperref,backref]{biblatex}
+
+\usepackage{makecell}
+
+\usepackage[outputdir=build]{minted}
+\usemintedstyle{emacs}
+\setminted{
+	bgcolor=lightgray,
+	fontsize=\small,
+	tabsize=2,
+	breaklines
+}
+
+% Environment per il codice
+% si utilizza con \begin{code}[lang]{caption}
+\makeatletter
+\newenvironment{code}[2][ruby]
+{
+	\VerbatimEnvironment
+	\begin{listing}[H]
+		\caption{#2}
+		\begin{minted}{#1}
+}
+{
+		\end{minted}
+	\end{listing}
+}
+\makeatother
+
+% file con le impostazioni personali
+\input{tesi-config}
+\hypersetup{draft}
+
+\begin{document}
+	% Materiale iniziale
+	\frontmatter
+	\input{inizio-fine/frontespizio}
+	\input{inizio-fine/colophon}
+	\input{inizio-fine/sommario}
+	\input{inizio-fine/ringraziamenti}
+	\input{inizio-fine/indici}
+	\cleardoublepage
+
+	% Capitoli
+	\mainmatter
+
+	\chapter{L'azienda}
+	\label{cap:azienda}   
+	\input{capitoli/azienda}
+
+	\chapter{Descrizione dello stage}
+	\label{cap:descrizione-stage}
+	\input{capitoli/descrizione-stage}
+
+	\chapter{Analisi e refactor dei modelli}
+	\label{cap:modelli}
+	\input{capitoli/modelli}
+
+	\chapter{Progettazione della API}
+	\label{cap:api}
+	\input{capitoli/api}
+	
+	\chapter{Codifica}
+	\label{cap:codifica}
+	\input{capitoli/codifica}
+
+	\chapter{Conclusioni}
+	\label{cap:conclusioni}
+	\input{capitoli/conclusioni}
+
+	\appendix
+	\chapter{Diagramma ER del sistema}
+	\label{cap:ER}
+	\input{capitoli/ER}
+	
+	% Materiale finale
+	\backmatter
+	\input{inizio-fine/bibliografia}
+\end{document}
