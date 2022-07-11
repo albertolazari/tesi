@@ -21,7 +21,7 @@ L'applicazione web è pensata per gestire l'organizzazione degli eventi. Non vie
 	\item Webex
 	\item Sistemi esterni di videoconferenze
 \end{itemize}
-\paragraph{Sistema di checkin} Nelle pagine degli eventi vengono riportati i checkin effettuati in presenza e in remoto, per tenere traccia del numero di utenti partecipanti.
+\paragraph{Sistema di check-in} Nelle pagine degli eventi vengono riportati i check-in effettuati in presenza e in remoto, per tenere traccia del numero di utenti partecipanti.
 \paragraph{Comunicazione tra utenti} È presente un sistema di messaggistica tra i partecipanti, online e in presenza. I partecipanti possono anche avere delle conversazioni con i relatori dell'evento.
 \paragraph{Notifiche} Ogni piattaforma può decidere di richiedere l'integrazione con il sistema di notifiche push e SMS per gli eventi. Le notifiche possono essere anche inviate via mail ai partecipanti e possono essere automatiche o programmate.
 \paragraph{Sistema di crediti} Le piattaforme possono anche decidere di utilizzare l'integrazione con il sistema dei crediti, in cui ogni evento permette agli utenti di guadagnare un numero specificato di crediti, in base alla durata della partecipazione all'evento.
@@ -103,7 +103,7 @@ Ruby \footcite{site:ruby} è un linguaggio di \emph{scripting} interpretato, a o
 	user.image = get_image_from uploaded_files
 \end{code}
 
-\noindent Il linguaggio è multi-paradigma, ma fortemente orientato agli oggetti: perfino i tipi primiti e i metodi vengono trattati come oggetti. Aggiungendo la possibilità di estendere ogni classe con nuovi metodi, anche successivamente alla sua dichiarazione, si ottiene un linguaggio estremamente flessibile ed estendibile, che consente di adattare il comportamento del linguaggio stesso alle proprie necessità.
+\noindent Il linguaggio è multi-paradigma, ma fortemente orientato agli oggetti: perfino i tipi primitivi e i metodi vengono trattati come oggetti. Aggiungendo la possibilità di estendere ogni classe con nuovi metodi, anche successivamente alla sua dichiarazione, si ottiene un linguaggio estremamente flessibile ed estendibile, che consente di adattare il comportamento del linguaggio stesso alle proprie necessità.
 
 Da queste premesse si intuisce come Ruby sia predisposto per essere facilmente estensibile, infatti è presente un RubyGems, il \emph{package manager} per gestire la distribuzione delle \emph{gemme}, pacchetti che possono includere varie funzionalità per estendere il linguaggio, tra cui librerie o eseguibili. La configurazione delle gemme necessarie per un progetto, con le loro dipendenze e versioni, viene eseguita da Bundler, che si occupa di mantenere tutte queste informazioni nei \emph{Gemfile}. Di seguito sono elencate le principali gemme utilizzate nel progetto di stage.
 \paragraph{Rails} Framework utilizzato, illustrato successivamente in dettaglio.

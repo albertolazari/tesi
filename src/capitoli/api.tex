@@ -15,7 +15,7 @@ Ad esempio:
 	\item una chiamata con metodo HTTP PUT a \verb|https://app.evvvents.it/api/| \\ \verb|platforms/2| risponde all'endpoint \verb|PUT /api/platforms/:id|;
 	\item a un endpoint generico \verb|DELETE /api/resources/:id| può rispondere alle chiamate \verb|DELETE /api/locations/1| o \verb|DELETE /api/users/4|.
 \end{enumerate}
-Ad ogni risposta viene associato uno stato HTTP. In caso di successo viene sempre restituito il codice \verb|200|, mentre gli errori restituiscono codici diversi, in base al contesto. I codici di errore genrali, che possono essere restituiti da qualsiasi endpoint implementato sono:
+Ad ogni risposta viene associato uno stato HTTP. In caso di successo viene sempre restituito il codice \verb|200|, mentre gli errori restituiscono codici diversi, in base al contesto. I codici di errore generali, che possono essere restituiti da qualsiasi endpoint implementato sono:
 \begin{itemize}
 	\item \verb|404|, nel caso in cui l'endpoint o la risorsa richiesta non esista;
 	\item \verb|500|, nel caso di errori generici nel backend, che non sono stati gestiti esplicitamente.
@@ -78,7 +78,7 @@ Di ogni risorsa vengono mostrate solo le informazioni essenziali, invece di tutt
 \end{itemize}
 
 \subsection{Dettagli di una risorsa} \label{api:dettaglio}
-Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli della risorsa specificata. I dettagli non comprendono la totalità degli attributi del modello, ma un suo sottinsieme selezionato, per nascondere all'utente eventuali dettagli implementativi non rilevanti o attributi di tracciamento, come il creatore o l'istante di creazione e ultima modifica del record. Di seguito vengono elencati, per ogni modello, gli attributi restituiti per ogni risorsa:
+Risponde all'endpoint \verb|GET /api/resources/:id|, restituendo i dettagli della risorsa specificata. I dettagli non comprendono la totalità degli attributi del modello, ma un suo sottoinsieme selezionato, per nascondere all'utente eventuali dettagli implementativi non rilevanti o attributi di tracciamento, come il creatore o l'istante di creazione e ultima modifica del record. Di seguito vengono elencati, per ogni modello, gli attributi restituiti per ogni risorsa:
 
 \subsubsection{User}
 \begin{itemize}
@@ -190,7 +190,7 @@ Risponde all'endpoint \verb|GET /api/users/roles|, elencando tutti i possibili r
 	\item speaker;
 	\item participant.
 \end{itemize}
-Questa è un'informazione utile al frontend, che utilizza già estensivamente, quindi andava fornita attraverso un endpoint dedicato, non potendo essere reperita in altri modi. Per la struttura attuale dell'applicazione la risposta è sempre la stessa, perché i ruoli sono \emph{hard coded} nel software.
+Questa è un'informazione utile al frontend, che utilizza già estensivamente, quindi andava fornita attraverso un endpoint dedicato, non potendo essere reperita in altri modi. Per la struttura attuale dell'applicazione la risposta è sempre la stessa, perché i ruoli sono \emph{hardcoded} nel software.
 
 \subsection{Lista delle risorse interne a una specifica risorsa} \label{api:lista-risorsa}
 Alcuni modelli sono logicamente contenuti all'interno di altri, si vuole quindi poter elencare tutte le risorse contenute in una seconda risorsa. Nei modelli che sono stati implementati durante il progetto di stage questo accade in due casi:
@@ -200,7 +200,7 @@ Alcuni modelli sono logicamente contenuti all'interno di altri, si vuole quindi 
 \end{enumerate} In questi casi se si vogliono elencare le risorse \verb|rescources_b| contenute nella risorsa \verb|resource_a| con identificativo \verb|:id| si effettua una chiamata all'endpoint \verb|GET /api/| \verb|resources_a/:id/resources_b|, ad esempio per elencare tutti gli organizzatori della piattaforma con id 10 si chiama \verb|GET /api/platforms/10/organizers|. È comunque possibile ottenere la lista di tutte le risorse relative a un modello, anche quando questo stia logicamente all'interno di un'altra risorsa. Ad esempio è comunque possibile ottenere la lista di tutti gli organizzatori di tutte le piattaforme chiamando \verb|GET /api/organizers|.
 
 \subsection{Creazione di una risorsa all'interno di un'altra risorsa} \label{api:creazione-risorsa}
-Nei casi appena sopracitati è necessario specificare la risorsa in cui sarà contenuta quella che si intende creare, quindi ho ritenuto oppurtuno rendere necessaria la creazione di queste particolari risorse chiamando l'endpoint \verb|POST /api/resources_a/:id/| \verb|resources_b|, invece che con l'endpoint descritto nella sotto-sezione \ref{api:creazione}, che non viene esposto per i modelli interessati.
+Nei casi appena sopracitati è necessario specificare la risorsa in cui sarà contenuta quella che si intende creare, quindi ho ritenuto opportuno rendere necessaria la creazione di queste particolari risorse chiamando l'endpoint \verb|POST /api/resources_a/:id/| \verb|resources_b|, invece che con l'endpoint descritto nella sotto-sezione \ref{api:creazione}, che non viene esposto per i modelli interessati.
 
 
 \section{Gestione dei permessi}
