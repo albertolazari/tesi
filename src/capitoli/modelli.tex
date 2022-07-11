@@ -1,5 +1,5 @@
 \section{Introduzione}
-La prima attività che ho dovuto svolgere è stata la definizione dei modelli del nuovo backend. Purtroppo l'architettura già presente nel vecchio backend, soprattutto lato database, aveva diversi difetti e andava rivista interamente, quindi è stato necessario partire da un'analisi di quanto già fatto, per capire se fosse necessario effettuare del refactor nella struttura dei dati. In molti casi le entità contenevano molti attributi superflui o non adatti ad essere associati alla specifica entità, perché più adatti ad essere associati attraverso una relazione a un'altra entità.
+La prima attività che ho dovuto svolgere è stata la definizione dei modelli del nuovo backend. Purtroppo l'architettura già presente nel vecchio backend, soprattutto lato database, aveva diversi difetti e andava rivista interamente, quindi è stato necessario partire da un'analisi di quanto già fatto, per capire se fosse necessario effettuare del refactor nella struttura dei dati. In molti casi le entità contenevano molti attributi superflui o non adatti ad essere associati alla specifica entità, perché più adatti ad essere associati attraverso una relazione a un'altra entità. Le decisioni sono state prese anche basandosi sull'analisi dei requisiti già fatta precedentemente al mio arrivo. Questa è stata tradotta in \emph{user stories}, che hanno guidato la successiva fase di codifica.
 
 In questo capitolo vengono riportati i cambiamenti e le scelte più significative che sono state fatte durante questa fase, che hanno portato alla produzione del diagramma ER completo dell'applicazione, riportato nell'appendice \ref{cap:ER}.
 
@@ -25,3 +25,34 @@ Ho deciso di raccogliere queste informazioni in un unico modello, con i campi de
 La motivazione alla base della scelta di non codificare le autorizzazioni all'interno di un modello è stata la complessità del processo di autorizzazione nel dominio trattato, che spesso dipende anche dall'oggetto su cui si vuole eseguire un'azione, qundi non esclusivamente dal ruolo dell'utente.
 
 La scelta di unire i partecipanti (corretti in ``participants'', invece di ``partecipants'') al resto degli utenti è stata presa per ridurre la duplicazione dei dati, in questo caso rilevante, perché le due entità, una volta riviste, avrebbero avuto quasi tutti i campi in comune. Inoltre, seppur vero che i partecipanti non possono effettuare l'autenticazione nell'applicazione web, utilizzano l'applicazione \emph{mobile}, che utilizzerà lo stesso backend.
+
+
+\subsection{Integrazioni}
+L'aspetto che più è stato cambiato nella nuova versione è il modo in cui vengono memorizzate le informazioni relative alle integrazioni. Nella versione precedente queste non erano strutturate in alcun modo: erano contenute in ben 4 entità diverse, pensate per essere dedicate ad altri tipi di dati, come intuibile dai nomi:
+\begin{itemize}
+	\item \verb|e_platforms|: qui venivano salvate le integrazioni abilitate per la piattaforma, cioè disponibili a tutti gli organizzatori sotto quella specifica piattaforma. L'informazione era memorizzata attraverso in un attributo booleano per ogni integrazione;
+	\item \verb|e_companies|: qui erano contenuti i token di accesso alle API delle integrazioni ed eventuali chiavi o link necessari;
+	\item \verb|e_events|: qui venivano memorizzati id, chiavi o altri dettagli dei meeting dell'evento;
+	\item \verb|e_events_users_link|: qui venivano salvati alcuni link per l'accesso al meeting dell'evento.
+\end{itemize}
+Come si può vedere, l'informazione era distribuita su diversi attributi, che avrebbero potuto essere rifattorizzati in entità separate, così da poter permettere anche l'aggiunta, la rimozione o la modifica delle varie integrazioni disponibili, invece di mantenerle \emph{hardcoded} nel database. Questo ha portato alla creazione di 3 entità interamente dedicate alle integrazioni:
+\begin{itemize}
+	\item \verb|integrations|: contiene i nomi delle integrazioni disponibili nell'applicazione. Le piattaforme dichiarano le integrazioni utilizzate basandosi su quelle presenti in questa entità;
+	\item \verb|organizer_integrations|: memorizza le integrazioni rese disponibili per ogni organizzatore, tra quelle disponibili per la sua piattaforma, e i dettagli dell'integrazione, necessari agli organizzatori;
+	\item \verb|event_integrations|: memorizza le integrazioni rese disponibili per ogni evento, tra quelle disponibili per il suo organizzatore, e i dettagli dell'integrazione necessari all'evento;
+	\item \verb|active_campaign_event_integration_details|: contiene i dettagli aggiuntivi, necessari all'integrazione ActiveCampaign.
+\end{itemize}
+Le entità create non sono definitive, soprattutto per quanto riguarda gli attributi. Una volta effettuata un'analisi più approfondita di ogni integrazione e sullo scopo di ognuna, si valuterà se rivedere questa struttura.
+
+
+\subsection{Piattaforme}
+\intro{SMTP.}
+
+\subsection{Reminder}
+\intro{Duplicati in eventi.}
+
+\subsection{Eventi}
+\intro{Reminder, integrazioni.}
+
+\subsection{Partecipazioni}
+\intro{Link per integrazioni.}
