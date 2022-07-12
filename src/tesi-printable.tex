@@ -22,8 +22,7 @@
 \documentclass[
 	10pt,      % corpo del font principale
 	a4paper,   % carta A4
-	%twoside,  % impagina per fronte-retro
-	oneside,   % per pdf
+	twoside,   % impagina per fronte-retro
 	openright, % inizio capitoli a destra
 	english,
 	italian
@@ -74,8 +73,7 @@
 
 \usepackage{hyperref}                   % collegamenti ipertestuali
 
-\usepackage{layaureo}	% layout simmetrico, per i pdf
-%\usepackage[binding=9.5mm]{layaureo}	% layout simmetrico, per i pdf
+\usepackage[binding=5mm]{layaureo}      % margini ottimizzati per l'A4; rilegatura di 5 mm
 
 \usepackage{listings}                   % codici
 
@@ -129,9 +127,9 @@
 \newenvironment{code}[2][ruby]
 {
 	\VerbatimEnvironment
-	\begin{listing}[H]%
-		\caption{#2}%
-		\begin{minted}{#1}%
+	\begin{listing}[H]
+		\caption{#2}
+		\begin{minted}{#1}
 }
 {
 		\end{minted}
@@ -141,6 +139,7 @@
 
 % file con le impostazioni personali
 \input{tesi-config}
+\hypersetup{draft}
 
 \begin{document}
 	% Materiale iniziale
