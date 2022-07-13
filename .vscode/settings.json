@@ -1,0 +1,6 @@
+{
+	"latex-workshop.latex.external.build.command": "src/compile.sh",
+	"latex-workshop.latex.external.build.args": [
+		"-gl"
+	]
+}
