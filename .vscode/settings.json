@@ -1,6 +1,5 @@
 {
 	"latex-workshop.latex.external.build.command": "src/compile.sh",
-	"latex-workshop.synctex.afterBuild.enabled": true,
 	"latex-workshop.latex.external.build.args": [
 		"-gl"
 	]

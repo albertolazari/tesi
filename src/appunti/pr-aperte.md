@@ -1,7 +1,7 @@
 # PR chiuse
 ## Users #1
 ### 19/05
-- Configurazione della repo per REST invece di GraphQL
+- Configurazione del repo per REST invece di GraphQL
 - Modello User
 - Specs
 Mancano i permessi degli utenti della gerarchia e i relativi loro test
@@ -77,4 +77,3 @@ Modello, controller e policies delle locations.
 Aggiunto concern Creator, per aggiungere automaticamente le associazioni e validazioni necessarie ai modelli che hanno un creator.
 
 > da trovare una soluzione per il bug dell'eager loading (user che non ha `created_objs` finché non viene caricato l'altro modello)
-
