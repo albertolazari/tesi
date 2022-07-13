@@ -21,7 +21,7 @@ loadParams() {
     PDF_NAME=$THESIS
   fi
 
-  while getopts :bcd:fglh flag
+  while getopts :bcd:fghlp flag
   do
     case "${flag}" in
       b) BIBLIOGRAPHY=false;;
@@ -30,6 +30,7 @@ loadParams() {
       f) FULL_RUN=true;;
       g) GLOSSARY=false;;
       l) LOG=true;;
+      p) THESIS="$THESIS-printable";;
       h) printHelp; exit 0;;
       *) printHelp; exit 1;;
     esac
@@ -38,7 +39,7 @@ loadParams() {
 
 printHelp() {
   echo "LaTeX FIUP thesis template compile script"
-  echo "Usage:    compile.sh [-bcfghl] [-d build_directory] [pdf_name]"
+  echo "Usage:    compile.sh [-bcfghlp] [-d build_directory] [pdf_name]"
   echo "Shell options:"
   echo "    -b    skip bibliography compile"
   echo "    -c    skip build directory clean"
@@ -47,6 +48,7 @@ printHelp() {
   echo "          Comes handy if you have problems with glossary or bibligraphy"
   echo "    -g    skip glossary compile"
   echo "    -l    keep logs in build/ directory"
+  echo "    -p    make the printable version"
   echo "    -h    print this message"
 }
 
