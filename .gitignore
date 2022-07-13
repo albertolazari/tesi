@@ -203,8 +203,6 @@
 # WinEdt
 **/*.bak
 **/*.sav
-# VSCode
-**/.vscode/
 
 # Texpad
 **/.texpadtmp
